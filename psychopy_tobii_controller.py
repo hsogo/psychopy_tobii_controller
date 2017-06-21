@@ -138,9 +138,11 @@ class TobiiController:
         self.calibration = tobii_research.ScreenBasedCalibration(self.eyetracker)
 
 
-    def show_status(self):
+    def show_status(self, text_color='white'):
         """
         Draw eyetracker status on the screen.
+        
+        :param text_color: Color of message text. Default value is 'white'
         """
         
         if self.eyetracker is None:
@@ -150,8 +152,8 @@ class TobiiController:
         self.eyetracker.subscribe_to(tobii_research.EYETRACKER_GAZE_DATA,
                                      self.on_gaze_data_status)
         
-        msg = psychopy.visual.TextStim(self.win,
-            height=0.02, pos=(0,-0.25), units='height', autoLog=False)
+        msg = psychopy.visual.TextStim(self.win, color=text_color,
+            height=0.02, pos=(0,-0.35), units='height', autoLog=False)
         bgrect = psychopy.visual.Rect(self.win,
             width=0.6, height=0.6, lineColor='white', fillColor='black',
             units='height', autoLog=False)
@@ -204,7 +206,7 @@ class TobiiController:
 
 
     def run_calibration(self, calibration_points, move_duration=1.5,
-            shuffle=True, start_key='space', decision_key='space'):
+            shuffle=True, start_key='space', decision_key='space', text_color='white'):
         """
         Run calibration.
         
@@ -219,6 +221,7 @@ class TobiiController:
             Default value is 'space'
         :param str decision_key: Name of key to accept/retry calibration.
             Default value is 'space'
+        :param text_color: Color of message text. Default value is 'white'
         """
         
         if self.eyetracker is None:
@@ -231,8 +234,8 @@ class TobiiController:
         img_draw = ImageDraw.Draw(img)
         
         result_img = psychopy.visual.SimpleImageStim(self.win, img, autoLog=False)
-        result_msg = psychopy.visual.TextStim(
-            self.win, pos=(0,-self.win.size[1]/4), units='pix', autoLog=False)
+        result_msg = psychopy.visual.TextStim(self.win, pos=(0,-self.win.size[1]/4),
+            color=text_color, units='pix', autoLog=False)
         remove_marker = psychopy.visual.Circle(
             self.win, radius=self.calibration_target_dot.radius*5,
             fillColor='black', lineColor='white', lineWidth=1, autoLog=False)
