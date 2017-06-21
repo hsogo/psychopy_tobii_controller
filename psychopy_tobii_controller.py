@@ -151,7 +151,7 @@ class TobiiController:
                                      self.on_gaze_data_status)
         
         msg = psychopy.visual.TextStim(self.win,
-            height=0.02, pos=(0,-0.35), units='height', autoLog=False)
+            height=0.02, pos=(0,-0.25), units='height', autoLog=False)
         bgrect = psychopy.visual.Rect(self.win,
             width=0.6, height=0.6, lineColor='white', fillColor='black',
             units='height', autoLog=False)
@@ -204,7 +204,7 @@ class TobiiController:
 
 
     def run_calibration(self, calibration_points, move_duration=1.5,
-            shuffle=True, startkey='space'):
+            shuffle=True, start_key='space', decision_key='space'):
         """
         Run calibration.
         
@@ -214,8 +214,10 @@ class TobiiController:
         :param bool shuffle: If True, order of calibration point is shuffled.
             Otherwise, calibration target moves in the order of calibration_points.
             Default value is True.
-        :param str startkey: Name of key to start calibration procedure.
+        :param str start_key: Name of key to start calibration procedure.
             If None, calibration starts immediately afte this method is called.
+            Default value is 'space'
+        :param str decision_key: Name of key to accept/retry calibration.
             Default value is 'space'
         """
         
@@ -254,12 +256,12 @@ class TobiiController:
             if shuffle:
                 np.random.shuffle(self.calibration_points)
             
-            if startkey is not None:
+            if start_key is not None:
                 waitkey = True
-                result_msg.setText('Press {} key to start calibration'.format(startkey))
+                result_msg.setText('Press {} key to start calibration'.format(start_key))
                 while waitkey:
                     for key in psychopy.event.getKeys():
-                        if key==startkey:
+                        if key==start_key:
                            waitkey = False
                     
                     result_msg.draw()
@@ -295,14 +297,14 @@ class TobiiController:
                         img_draw.ellipse(((p[0]*self.win.size[0]-3, p[1]*self.win.size[1]-3),
                                          (p[0]*self.win.size[0]+3, p[1]*self.win.size[1]+3)), outline=(0,0,0))
 
-            result_msg.setText('Accept/Retry: Space\nSelect recalibration points: 0-9 key\nAbort: ESC')
+            result_msg.setText('Accept/Retry: {}\nSelect recalibration points: 0-9 key\nAbort: esc'.format(decision_key))
             result_img.setImage(img)
             
             waitkey = True
             self.retry_points = []
             while waitkey:
                 for key in psychopy.event.getKeys():
-                    if key in ['space', 'escape']:
+                    if key in [decision_key, 'escape']:
                         waitkey = False
                     elif key in ['0', 'num_0']:
                         if len(self.retry_points) == 0:
@@ -326,7 +328,7 @@ class TobiiController:
                 result_msg.draw()
                 self.win.flip()
         
-            if key == 'space':
+            if key == decision_key:
                 if len(self.retry_points) == 0:
                     retval = 'accept'
                     in_calibration_loop = False
@@ -439,6 +441,7 @@ class TobiiController:
         - 'disc_line_color': line color of the surrounding disc of calibration target
         - 'disc_fill_color': fill color of the surrounding disc of calibration target
         - 'disc_line_width': line width of the surrounding disc of calibration target
+        - 'text_color': color of text
         """
         
         param_dict = {'dot_size':self.calibration_target_dot_size,
