@@ -11,6 +11,7 @@ import os
 import types
 import datetime
 import numpy as np
+import time
 
 import tobii_research
 
@@ -81,7 +82,7 @@ def pix2deg(pixels, monitor, correctFlat=False):
     return cm2deg(cmSize, monitor, correctFlat)
 
 
-class TobiiController:
+class tobii_controller:
     """
     Tobii controller for PsychoPy
     tobii_research package is required to use this class.
@@ -100,7 +101,7 @@ class TobiiController:
 
     def __init__(self, win, id=0):
         """
-        Initialize TobiiController object.
+        Initialize tobii_controller object.
         
         :param win: PsychoPy Window object.
         :param int id: ID of Tobii unit to connect with.
@@ -138,15 +139,23 @@ class TobiiController:
         self.calibration = tobii_research.ScreenBasedCalibration(self.eyetracker)
 
 
-    def show_status(self, text_color='white'):
+    def show_status(self, text_color='white', enable_mouse=False):
         """
         Draw eyetracker status on the screen.
         
         :param text_color: Color of message text. Default value is 'white'
+        :param bool enable_mouse: If True, mouse operation is enabled.
+            Default value is False.
         """
         
         if self.eyetracker is None:
             raise RuntimeError('Eyetracker is not found.')
+        
+        original_mouseVisible = self.win.mouseVisible
+        self.win.mouseVisible = False
+        
+        if enable_mouse:
+            mouse = psychopy.event.Mouse(visible=False, win=self.win)
         
         self.gaze_data_status = None
         self.eyetracker.subscribe_to(tobii_research.EYETRACKER_GAZE_DATA,
@@ -189,11 +198,13 @@ class TobiiController:
         
         self.eyetracker.unsubscribe_from(tobii_research.EYETRACKER_GAZE_DATA)
 
+        self.win.mouseVisible = original_mouseVisible
+
 
     def on_gaze_data_status(self, gaze_data):
         """
         Callback function used by
-        :func:`~psychopy_tobii_controller.TobiiController.show_status`
+        :func:`~psychopy_tobii_controller.tobii_controller.show_status`
         
         Usually, users don't have to call this method.
         """
@@ -206,7 +217,8 @@ class TobiiController:
 
 
     def run_calibration(self, calibration_points, move_duration=1.5,
-            shuffle=True, start_key='space', decision_key='space', text_color='white'):
+            shuffle=True, start_key='space', decision_key='space',
+            text_color='white', enable_mouse=False):
         """
         Run calibration.
         
@@ -218,10 +230,12 @@ class TobiiController:
             Default value is True.
         :param str start_key: Name of key to start calibration procedure.
             If None, calibration starts immediately afte this method is called.
-            Default value is 'space'
+            Default value is 'space'.
         :param str decision_key: Name of key to accept/retry calibration.
-            Default value is 'space'
+            Default value is 'space'.
         :param text_color: Color of message text. Default value is 'white'
+        :param bool enable_mouse: If True, mouse operation is enabled.
+            Default value is False.
         """
         
         if self.eyetracker is None:
@@ -229,6 +243,12 @@ class TobiiController:
         
         if not (2 <= len(calibration_points) <= 9):
             raise ValueError('Calibration points must be 2~9')
+        
+        original_mouseVisible = self.win.mouseVisible
+        self.win.mouseVisible = False
+
+        if enable_mouse:
+            mouse = psychopy.event.Mouse(visible=False, win=self.win)
         
         img = Image.new('RGB',tuple(self.win.size))
         img_draw = ImageDraw.Draw(img)
@@ -259,13 +279,22 @@ class TobiiController:
             if shuffle:
                 np.random.shuffle(self.calibration_points)
             
-            if start_key is not None:
+            if start_key is not None or enable_mouse:
                 waitkey = True
-                result_msg.setText('Press {} key to start calibration'.format(start_key))
+                if start_key is not None:
+                    if enable_mouse:
+                        result_msg.setText('Press {} or click left button to start calibration'.format(start_key))
+                    else:
+                        result_msg.setText('Press {} to start calibration'.format(start_key))
+                else: # enable_mouse==True
+                    result_msg.setText('Click left button to start calibration')
                 while waitkey:
                     for key in psychopy.event.getKeys():
                         if key==start_key:
                            waitkey = False
+                    
+                    if enable_mouse and mouse.getPressed()[0]:
+                        waitkey = False
                     
                     result_msg.draw()
                     self.win.flip()
@@ -300,11 +329,16 @@ class TobiiController:
                         img_draw.ellipse(((p[0]*self.win.size[0]-3, p[1]*self.win.size[1]-3),
                                          (p[0]*self.win.size[0]+3, p[1]*self.win.size[1]+3)), outline=(0,0,0))
 
-            result_msg.setText('Accept/Retry: {}\nSelect recalibration points: 0-9 key\nAbort: esc'.format(decision_key))
+            if enable_mouse:
+                result_msg.setText('Accept/Retry: {} or right-click\nSelect recalibration points: 0-9 key or left-click\nAbort: esc'.format(decision_key))
+            else:
+                result_msg.setText('Accept/Retry: {}\nSelect recalibration points: 0-9 key\nAbort: esc'.format(decision_key))
             result_img.setImage(img)
             
             waitkey = True
             self.retry_points = []
+            if enable_mouse:
+                mouse.setVisible(True)
             while waitkey:
                 for key in psychopy.event.getKeys():
                     if key in [decision_key, 'escape']:
@@ -321,6 +355,22 @@ class TobiiController:
                                 self.retry_points.remove(key_index)
                             else:
                                 self.retry_points.append(key_index)
+                if enable_mouse:
+                    pressed = mouse.getPressed()
+                    if pressed[2]: # right click
+                        key = decision_key
+                        waitkey = False
+                    elif pressed[0]: # left click
+                        mouse_pos = mouse.getPos()
+                        for key_index in range(len(self.original_calibration_points)):
+                            p = self.original_calibration_points[key_index]
+                            if np.linalg.norm([mouse_pos[0]-p[0], mouse_pos[1]-p[1]]) < 0.1:
+                                if key_index in self.retry_points:
+                                    self.retry_points.remove(key_index)
+                                else:
+                                    self.retry_points.append(key_index)
+                                time.sleep(0.2)
+                                break
                 result_img.draw()
                 if len(self.retry_points)>0:
                     for index in self.retry_points:
@@ -344,15 +394,22 @@ class TobiiController:
                 in_calibration_loop = False
             else:
                 raise RuntimeError('Calibration: Invalid key')
+                
+            if enable_mouse:
+                mouse.setVisible(False)
+
 
         self.calibration.leave_calibration_mode()
+
+        self.win.mouseVisible = original_mouseVisible
+
         return retval
 
 
     def collect_calibration_data(self, p, cood='PsychoPy'):
         """
         Callback function used by
-        :func:`~psychopy_tobii_controller.TobiiController.run_calibration`
+        :func:`~psychopy_tobii_controller.tobii_controller.run_calibration`
         
         Usually, users don't have to call this method.
         """
@@ -369,7 +426,7 @@ class TobiiController:
         """
         Updating calibration target and correcting calibration data.
         This method is called by
-        :func:`~psychopy_tobii_controller.TobiiController.run_calibration`
+        :func:`~psychopy_tobii_controller.tobii_controller.run_calibration`
         
         Usually, users don't have to call this method.
         """
@@ -402,7 +459,7 @@ class TobiiController:
         :param func: custom calibration function.
         """
         
-        self.update_calibration = types.MethodType(func, self, TobiiController)
+        self.update_calibration = types.MethodType(func, self, tobii_controller)
 
 
     def use_default_calibration(self):
@@ -418,7 +475,7 @@ class TobiiController:
         Set calibration parameters.
         
         :param dict param_dict: Dict object that holds calibration parameters.
-            Use :func:`~psychopy_tobii_controller.TobiiController.get_calibration_param`
+            Use :func:`~psychopy_tobii_controller.tobii_controller.get_calibration_param`
             to get dict object.
         """
         self.calibration_target_dot_size = param_dict['dot_size']
@@ -479,7 +536,7 @@ class TobiiController:
     def on_gaze_data(self, gaze_data):
         """
         Callback function used by
-        :func:`~psychopy_tobii_controller.TobiiController.subscribe`
+        :func:`~psychopy_tobii_controller.tobii_controller.subscribe`
         
         Usually, users don't have to call this method.
         """
