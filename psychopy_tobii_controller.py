@@ -364,7 +364,7 @@ class tobii_controller:
                         mouse_pos = mouse.getPos()
                         for key_index in range(len(self.original_calibration_points)):
                             p = self.original_calibration_points[key_index]
-                            if np.linalg.norm([mouse_pos[0]-p[0], mouse_pos[1]-p[1]]) < 0.1:
+                            if np.linalg.norm([mouse_pos[0]-p[0], mouse_pos[1]-p[1]]) < self.calibration_target_dot.radius*5:
                                 if key_index in self.retry_points:
                                     self.retry_points.remove(key_index)
                                 else:
