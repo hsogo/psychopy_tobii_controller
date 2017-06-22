@@ -8,9 +8,38 @@ Disclaimer: psychopy_tobii_controller is unofficial. It is NOT affiliated with T
 
 ## Licence
 
-[GPLv3](https://github.com/hsogo/psychopy_tobii_controller/blob/master/LICENCE)
+GPLv3 (https://github.com/hsogo/psychopy_tobii_controller/blob/master/LICENCE)
 
 ## Author
 
-[hsogo](https://github.com/hsogo)
+Hiroyuki Sogo (https://github.com/hsogo)
+
+## Sample codes
+
+### sample01.py
+
+Basic usage of tobii_controller is demonstrated in this sample.
+
+- Initializing tobii_controller object
+- Open/close data file
+- Showing Tobii status display
+- Performing calibration
+- Start/Stop recording
+- Getting the latest gaze position
+- Recording event data
+
+### sample02.py
+
+- Customizing calibation target color and size.
+- Customizing the key to start calibration procedure.
+- Controlling the order of calibration target position.
+
+### sample03.py
+
+- Customizing calibration procedure.
+
+### sample04.py
+
+- Customizing text color in the status display and calibration.
+- Using mouse in the status display and calibration.
 
