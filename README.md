@@ -14,6 +14,11 @@ GPLv3 (https://github.com/hsogo/psychopy_tobii_controller/blob/master/LICENCE)
 
 Hiroyuki Sogo (https://github.com/hsogo)
 
+## Requirements
+
+PsychoPy (http://www.psychopy.org/)
+tobii_research (https://pypi.python.org/pypi/tobii-research)
+
 ## Sample codes
 
 ### sample01.py
