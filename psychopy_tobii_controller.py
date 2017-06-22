@@ -250,7 +250,7 @@ class tobii_controller:
         if enable_mouse:
             mouse = psychopy.event.Mouse(visible=False, win=self.win)
         
-        img = Image.new('RGB',tuple(self.win.size))
+        img = Image.new('RGBA',tuple(self.win.size))
         img_draw = ImageDraw.Draw(img)
         
         result_img = psychopy.visual.SimpleImageStim(self.win, img, autoLog=False)
@@ -307,7 +307,7 @@ class tobii_controller:
             
             self.win.flip()
             
-            img_draw.rectangle(((0,0),tuple(self.win.size)),fill=(128,128,128))
+            img_draw.rectangle(((0,0),tuple(self.win.size)),fill=(0,0,0,0))
             if calibration_result.status == tobii_research.CALIBRATION_STATUS_FAILURE:
                 #computeCalibration failed.
                 pass
@@ -322,12 +322,12 @@ class tobii_controller:
                             rp = calibration_sample.right_eye.position_on_display_area
                             if calibration_sample.left_eye.validity == tobii_research.VALIDITY_VALID_AND_USED:
                                 img_draw.line(((p[0]*self.win.size[0], p[1]*self.win.size[1]),
-                                              (lp[0]*self.win.size[0], lp[1]*self.win.size[1])), fill=(0,255,0))
+                                              (lp[0]*self.win.size[0], lp[1]*self.win.size[1])), fill=(0,255,0,255))
                             if calibration_sample.right_eye.validity == tobii_research.VALIDITY_VALID_AND_USED:
                                 img_draw.line(((p[0]*self.win.size[0], p[1]*self.win.size[1]),
-                                              (rp[0]*self.win.size[0], rp[1]*self.win.size[1])), fill=(255,0,0))
+                                              (rp[0]*self.win.size[0], rp[1]*self.win.size[1])), fill=(255,0,0,255))
                         img_draw.ellipse(((p[0]*self.win.size[0]-3, p[1]*self.win.size[1]-3),
-                                         (p[0]*self.win.size[0]+3, p[1]*self.win.size[1]+3)), outline=(0,0,0))
+                                         (p[0]*self.win.size[0]+3, p[1]*self.win.size[1]+3)), outline=(0,0,0,255))
 
             if enable_mouse:
                 result_msg.setText('Accept/Retry: {} or right-click\nSelect recalibration points: 0-9 key or left-click\nAbort: esc'.format(decision_key))
