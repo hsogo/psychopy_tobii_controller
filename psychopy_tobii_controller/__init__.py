@@ -225,7 +225,7 @@ class tobii_controller:
         :param calibration_points: List of position of calibration points.
         :param float move_duration: Duration of animation of calibration target.
             Unit is second.  Default value is 1.5.
-        :param bool shuffle: If True, order of calibration point is shuffled.
+        :param bool shuffle: If True, order of calibration points is shuffled.
             Otherwise, calibration target moves in the order of calibration_points.
             Default value is True.
         :param str start_key: Name of key to start calibration procedure.
@@ -490,7 +490,7 @@ class tobii_controller:
 
     def get_calibration_param(self):
         """
-        Set calibration parameters as a dict object.
+        Get calibration parameters as a dict object.
         The dict object has following keys.
 
         - 'dot_size': size of the center dot of calibration target.
