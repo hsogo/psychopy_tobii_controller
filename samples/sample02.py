@@ -33,11 +33,13 @@ controller.set_calibration_param(param)
 
 controller.show_status()
 
+# Speed of calibration target shrinking can be changed by move_duration paramter.
 # If shuffle is False, order of the calibration target poisitons is not shuffled.
 # Set start_key if you want to change the key to start calibration procedure.
 # If start_key is None, calibration procedure starts immediately.
 ret = controller.run_calibration(
         [(-0.4,0.4), (0.4,0.4) , (0.0,0.0), (-0.4,-0.4), (0.4,-0.4)],
+        move_duration=0.5,
         shuffle=False,
         start_key='return'
     )
