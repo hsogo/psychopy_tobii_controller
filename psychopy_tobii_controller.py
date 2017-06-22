@@ -387,7 +387,7 @@ class tobii_controller:
                     in_calibration_loop = False
                 else: #retry
                     for point_index in self.retry_points:
-                        x, y = self.getTobiiPos(self.original_calibration_points[point_index])
+                        x, y = self.get_tobii_pos(self.original_calibration_points[point_index])
                         self.calibration.discard_data(x, y)
             elif key == 'escape':
                 retval = 'abort'
@@ -415,7 +415,7 @@ class tobii_controller:
         """
         
         if cood=='PsychoPy':
-            self.calibration.collect_data(*self.getTobiiPos(p))
+            self.calibration.collect_data(*self.get_tobii_pos(p))
         elif cood =='Tobii':
             self.calibration.collect_data(*p)
         else:
@@ -433,7 +433,7 @@ class tobii_controller:
         
         clock = psychopy.core.Clock()
         for point_index in range(len(self.calibration_points)):
-            x, y = self.getTobiiPos(self.calibration_points[point_index])
+            x, y = self.get_tobii_pos(self.calibration_points[point_index])
             self.calibration_target_dot.setPos(self.calibration_points[point_index])
             self.calibration_target_disc.setPos(self.calibration_points[point_index])
             
@@ -563,8 +563,8 @@ class tobii_controller:
         if len(self.gaze_data)==0:
             return (np.nan, np.nan, np.nan, np.nan)
         else:
-            lxy = self.getPsychoPyPos(self.gaze_data[-1][1:3])
-            rxy = self.getPsychoPyPos(self.gaze_data[-1][5:7])
+            lxy = self.get_psychopy_pos(self.gaze_data[-1][1:3])
+            rxy = self.get_psychopy_pos(self.gaze_data[-1][5:7])
             return (lxy[0],lxy[1],rxy[0],rxy[1])
 
 
@@ -673,8 +673,8 @@ class tobii_controller:
                          )
                     num_output_events += 1
 
-            lxy = self.getPsychoPyPos(g[1:3])
-            rxy = self.getPsychoPyPos(g[5:7])
+            lxy = self.get_psychopy_pos(g[1:3])
+            rxy = self.get_psychopy_pos(g[5:7])
             self.datafile.write('%.1f\t%.4f\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%d'%(
                                 (g[0]-timestamp_start)/1000.0,
                                 lxy[0], lxy[1],
@@ -704,7 +704,7 @@ class tobii_controller:
         self.datafile.flush()
 
 
-    def getPsychoPyPos(self, p):
+    def get_psychopy_pos(self, p):
         """
         Convert PsychoPy position to Tobii coordinate system.
         
@@ -732,7 +732,7 @@ class tobii_controller:
             return p
 
 
-    def getTobiiPos(self, p):
+    def get_tobii_pos(self, p):
         """
         Convert Tobii position to PsychoPy coordinate system.
         
