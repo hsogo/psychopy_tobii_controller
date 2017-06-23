@@ -151,9 +151,6 @@ class tobii_controller:
         if self.eyetracker is None:
             raise RuntimeError('Eyetracker is not found.')
         
-        original_mouseVisible = self.win.mouseVisible
-        self.win.mouseVisible = False
-        
         if enable_mouse:
             mouse = psychopy.event.Mouse(visible=False, win=self.win)
         
@@ -193,12 +190,13 @@ class tobii_controller:
                 if key == 'escape' or key == 'space':
                     b_show_status = False
             
+            if enable_mouse and mouse.getPressed()[0]:
+                b_show_status = False
+            
             msg.draw()
             self.win.flip()
         
         self.eyetracker.unsubscribe_from(tobii_research.EYETRACKER_GAZE_DATA)
-
-        self.win.mouseVisible = original_mouseVisible
 
 
     def on_gaze_data_status(self, gaze_data):
@@ -244,9 +242,7 @@ class tobii_controller:
         if not (2 <= len(calibration_points) <= 9):
             raise ValueError('Calibration points must be 2~9')
         
-        original_mouseVisible = self.win.mouseVisible
-        self.win.mouseVisible = False
-
+        
         if enable_mouse:
             mouse = psychopy.event.Mouse(visible=False, win=self.win)
         
@@ -401,7 +397,8 @@ class tobii_controller:
 
         self.calibration.leave_calibration_mode()
 
-        self.win.mouseVisible = original_mouseVisible
+        if enable_mouse:
+            mouse.setVisible(False)
 
         return retval
 
