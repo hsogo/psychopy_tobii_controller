@@ -48,3 +48,14 @@ Basic usage of tobii_controller is demonstrated in this sample.
 - Customizing text color in the status display and calibration.
 - Using mouse in the status display and calibration.
 
+### builder_sample01.psyexp
+
+Basic usage of Builder components of tobii_controller is demonstrated in this sample.
+
+- ptc_init: Initialize tobii_controller. This component works in any routine.
+- ptc_cal: Run calibration. Calibration is performed at the beginning of the routine where this component is placed.  More preceisely, this component is equivalent to add calibration codes to "begin routine" of the Code component.
+- ptc_rec: Record gaze data in the routine where this component is placed.
+- ptc_message: Insert event during recording. ptc_rec component should be placed in the same routine.
+- ptc_getpos: Get the latest gaze position. Gaze position is stored in a variable with the same name as the 'Name' property of this component.  ptc_rec component should be placed in the same routine.
+
+Builder components are in *ptc_components* directory.  Copy this directory to your component directory.  For example, 'C:/Users/foo/Documents/my_components' is in your component directory, contents of ptc_component directory (i.e, __init__.py, ptc_init.py and so on) should be placed in C:/Users/foo/Documents/my_components/ptc_components'.
