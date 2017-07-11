@@ -38,7 +38,7 @@ default_calibration_target_disc_size = {
         'deg':0.05*20, 'degFlat':0.05*20, 'degFlatPos':0.05*20
     }
 
-key_index_dict = {
+default_key_index_dict = {
         '1':0, 'num_1':0, '2':1, 'num_2':1, '3':2, 'num_3':2,
         '4':3, 'num_4':3, '5':4, 'num_5':4, '6':5, 'num_6':5,
         '7':6, 'num_7':6, '8':7, 'num_8':7, '9':8, 'num_9':8
@@ -97,6 +97,7 @@ class tobii_controller:
     retry_points = []
     datafile = None
     embed_events = False
+    key_index_dict = default_key_index_dict.copy()
 
 
     def __init__(self, win, id=0):
@@ -344,8 +345,8 @@ class tobii_controller:
                             self.retry_points = list(range(len(self.original_calibration_points)))
                         else:
                             self.retry_points = []
-                    elif key in key_index_dict:
-                        key_index = key_index_dict[key]
+                    elif key in self.key_index_dict:
+                        key_index = self.key_index_dict[key]
                         if key_index<len(self.original_calibration_points):
                             if key_index in self.retry_points:
                                 self.retry_points.remove(key_index)
@@ -465,6 +466,37 @@ class tobii_controller:
         """
         
         self.update_calibration = self.update_calibration_default
+
+
+    def get_calibration_keymap(self):
+        """
+        Get current key mapping for selecting calibration points as a dict object.
+        """
+        
+        return self.key_index_dict.copy()
+
+
+    def set_calibration_keymap(self, keymap):
+        """
+        Set key mapping for selecting calibration points.
+        
+        :param dict keymap: Dict object that holds calibration keymap.
+            Key of the dict object correspond to PsychoPy key name.
+            Value is index of the list of calibration points.
+            For example, if you have only two calibration points and 
+            want to select these points by 'z' and 'x' key, set keymap
+            {'z':0, 'x':1}.
+        """
+        
+        self.key_index_dict = keymap.copy()
+
+
+    def use_default_calibration_keymap(self):
+        """
+        Set default key mapping for selecting calibration points.
+        """
+        
+        self.key_index_dict = default_key_index_dict.copy()
 
 
     def set_calibration_param(self, param_dict):
