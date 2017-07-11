@@ -6,12 +6,14 @@
 # 
 
 from __future__ import division
+from __future__ import absolute_import
 
 import os
 import types
 import datetime
 import numpy as np
 import time
+import warnings
 
 import tobii_research
 
@@ -659,7 +661,7 @@ class tobii_controller:
         """
         
         if self.datafile == None:
-            print('data file is not set.')
+            warnings.warn('data file is not set.')
             return
         
         if len(self.gaze_data)==0:
@@ -756,9 +758,7 @@ class tobii_controller:
         elif self.win.units in ['degFlat', 'degFlatPos']:
             return (pix2deg(np.array(p_pix), self.win.monitor, correctFlat=True))
         else:
-            #show warning
-            print('unit ({}) is not supported.'.format(self.win.units))
-            return p
+            raise ValueError('unit ({}) is not supported.'.format(self.win.units))
 
 
     def get_tobii_pos(self, p):
@@ -784,9 +784,7 @@ class tobii_controller:
             p_pix = (deg2pix(np.array(p), self.win.monitor, correctFlat=True))
             gp = (p_pix[0]/self.win.size[0]+0.5, p_pix[1]/self.win.size[1]+0.5)
         else:
-            #show warning
-            print('unit ({}) is not supported'.format(self.win.units))
-            return p
+            raise ValueError('unit ({}) is not supported'.format(self.win.units))
 
         return (gp[0], 1-gp[1]) # flip vert
 
