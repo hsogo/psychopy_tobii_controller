@@ -1,7 +1,7 @@
 psychopy_tobii_controller
 ============================
 
-psychopy_tobii_controller is a helper module to use tobii_research package from PsychoPy.
+psychopy_tobii_controller is a helper module to use tobii_research package with PsychoPy.
 
 Disclaimer: psychopy_tobii_controller is unofficial. It is NOT affiliated with Tobii.
 
@@ -47,6 +47,10 @@ Basic usage of tobii_controller is demonstrated in this sample.
 
 - Customizing text color in the status display and calibration.
 - Using mouse in the status display and calibration.
+
+### sample05.py
+
+- Customizing key mapping for selecting calibration points.
 
 ### builder_sample01.psyexp
 
