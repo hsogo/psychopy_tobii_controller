@@ -655,8 +655,12 @@ class tobii_controller:
         """
         Record events with timestamp.
         
+        Note: This method works only during recording.
+        
         :param str event: Any string.
         """
+        if not self.recording:
+            return
         
         self.event_data.append((tobii_research.get_system_time_stamp(), event))
 
@@ -703,46 +707,53 @@ class tobii_controller:
                                            'ValidityRight',
                                            'GazePointX',
                                            'GazePointY'])+'\n')
+
+        format_string = '%.1f\t%.4f\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%d\t%.4f\t%.4f'
+        
         timestamp_start = self.gaze_data[0][0]
         num_output_events = 0
         
-        for g in self.gaze_data:
-            if self.embed_events:
-                if num_output_events < len(self.event_data) and self.event_data[num_output_events][0] < g[0]:
-                    self.datafile.write(('%.1f'+'\t'*11+'%s\n') % (
-                        (self.event_data[num_output_events][0]-timestamp_start)/1000.0,
-                        self.event_data[num_output_events][1])
-                         )
-                    num_output_events += 1
+        if self.embed_events:
+            for i in range(len(self.gaze_data)):
+                if num_output_events < len(self.event_data) and self.event_data[num_output_events][0] < self.gaze_data[i][0]:
+                    event_t = self.event_data[num_output_events][0]
+                    event_text = self.event_data[num_output_events][1]
+                    
+                    if i>0:
+                        output_data = self.convert_tobii_record(
+                            self.interpolate_gaze_data(self.gaze_data[i-1], self.gaze_data[i], event_t),
+                            timestamp_start)
+                    else:
+                        output_data = ((event_t-timestamp_start)/1000.0, np.nan, np.nan, np.nan, 0,
+                                       np.nan, np.nan, np.nan, 0, np.nan, np.nan)
+                    
+                    self.datafile.write(format_string % output_data)
+                    self.datafile.write('\t%s\n' % (event_text))
 
-            lxy = self.get_psychopy_pos(g[1:3])
-            rxy = self.get_psychopy_pos(g[5:7])
-            self.datafile.write('%.1f\t%.4f\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%d'%(
-                                (g[0]-timestamp_start)/1000.0,
-                                lxy[0], lxy[1],
-                                g[3], g[4],
-                                rxy[0], rxy[1],
-                                g[7], g[8]))
-            if g[4] == 0 and g[8] == 0: #not detected
-                ave = (np.nan, np.nan)
-            elif g[4] == 0:
-                ave = rxy
-            elif g[8] == 0:
-                ave = lxy
-            else:
-                ave = ((lxy[0]+rxy[0])/2.0,(lxy[1]+rxy[1])/2.0)
+                    num_output_events += 1
                 
-            if self.embed_events:
-                self.datafile.write('\t%.4f\t%.4f\t\n' % ave)
-            else:
-                self.datafile.write('\t%.4f\t%.4f\n' % ave)
-        
-        if not self.embed_events:
+                self.datafile.write(format_string % self.convert_tobii_record(self.gaze_data[i], timestamp_start))
+                self.datafile.write('\t\n')
+
+            # flush remaining events
+            if num_output_events < len(self.event_data):
+                for e_i in range(num_output_events, len(self.event_data)):
+                    event_t = self.event_data[e_i][0]
+                    event_text = self.event_data[e_i][1]
+                    
+                    output_data = ((event_t-timestamp_start)/1000.0, np.nan, np.nan, np.nan, 0,
+                                   np.nan, np.nan, np.nan, 0, np.nan, np.nan)
+                    self.datafile.write(format_string % output_data)
+                    self.datafile.write('\t%s\n' % (event_text))
+        else:
+            for i in range(len(self.gaze_data)):
+                self.datafile.write(format_string % self.convert_tobii_record(self.gaze_data[i], timestamp_start))
+                self.datafile.write('\n')
+            
             self.datafile.write('TimeStamp\tEvent\n')
             for e in self.event_data:
                 self.datafile.write('%.1f\t%s\n' % ((e[0]-timestamp_start)/1000.0, e[1]))
         
-        self.datafile.write('\n')
         self.datafile.flush()
 
 
@@ -799,3 +810,70 @@ class tobii_controller:
 
         return (gp[0], 1-gp[1]) # flip vert
 
+    def convert_tobii_record(self, record, start_time):
+        """
+        Convert tobii data to output style.
+        Usually, users don't have to call this method.
+        
+        :param record: element of self.gaze_data.
+        :param start_time: Tobii's timestamp when recording was started.
+        """
+    
+        lxy = self.get_psychopy_pos(record[1:3])
+        rxy = self.get_psychopy_pos(record[5:7])
+
+        if record[4] == 0 and record[8] == 0: #not detected
+            ave = (np.nan, np.nan)
+        elif record[4] == 0:
+            ave = rxy
+        elif record[8] == 0:
+            ave = lxy
+        else:
+            ave = ((lxy[0]+rxy[0])/2.0,(lxy[1]+rxy[1])/2.0)
+        
+        return ((record[0]-start_time)/1000.0,
+                lxy[0], lxy[1], record[3], record[4],
+                rxy[0], rxy[1], record[7], record[8],
+                ave[0], ave[1])
+
+    def interpolate_gaze_data(self, record1, record2, t):
+        """
+        Interpolate gaze data between record1 and record2.
+        Usually, users don't have to call this method.
+        
+        :param record1: element of self.gaze_data.
+        :param record2: element of self.gaze_data.
+        :param t: timestamp to calculate interpolation.
+        """
+        
+        w1 = (record2[0]-t)/(record2[0]-record1[0])
+        w2 = (t-record1[0])/(record2[0]-record1[0])
+        
+        #left eye
+        if record1[4] == 0 and record2[4] == 0:
+            ldata = record1[1:5]
+        elif record1[4] == 0:
+            ldata = record2[1:5]
+        elif record2[4] == 0:
+            ldata = record1[1:5]
+        else:
+            ldata = (w1*record1[1] + w2*record2[1],
+                     w1*record1[2] + w2*record2[2],
+                     w1*record1[3] + w2*record2[3],
+                     1)
+
+        #right eye
+        if record1[8] == 0 and record2[8] == 0:
+            rdata = record1[5:9]
+        elif record1[4] == 0:
+            rdata = record2[5:9]
+        elif record2[4] == 0:
+            rdata = record1[5:9]
+        else:
+            rdata = (w1*record1[5] + w2*record2[5],
+                     w1*record1[6] + w2*record2[6],
+                     w1*record1[7] + w2*record2[7],
+                     1)
+
+        return (t,) + ldata + rdata
+        
