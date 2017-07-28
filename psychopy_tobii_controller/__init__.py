@@ -99,6 +99,7 @@ class tobii_controller:
     retry_points = []
     datafile = None
     embed_events = False
+    recording = False
     key_index_dict = default_key_index_dict.copy()
 
 
@@ -553,6 +554,7 @@ class tobii_controller:
         
         self.gaze_data = []
         self.event_data = []
+        self.recording = True
         self.eyetracker.subscribe_to(tobii_research.EYETRACKER_GAZE_DATA, self.on_gaze_data)
 
 
@@ -562,6 +564,10 @@ class tobii_controller:
         """
         
         self.eyetracker.unsubscribe_from(tobii_research.EYETRACKER_GAZE_DATA)
+        self.recording = False
+        self.flush_data()
+        self.gaze_data = []
+        self.event_data = []
 
 
     def on_gaze_data(self, gaze_data):
@@ -658,6 +664,8 @@ class tobii_controller:
     def flush_data(self):
         """
         Write data to the data file.
+        
+        Note: This method do nothing during recording.
         """
         
         if self.datafile == None:
@@ -665,6 +673,9 @@ class tobii_controller:
             return
         
         if len(self.gaze_data)==0:
+            return
+        
+        if self.recording:
             return
         
         if self.embed_events:
