@@ -43,28 +43,35 @@ for trial in range(len(gaze_data)):
     
     # X-Y plot (smoothed data)
     plt.subplot(2,2,1)
+    plt.plot(x, y)
     plt.xlim([-800,800])
     plt.ylim([-600,600])
-    plt.plot(x, y)
+    plt.xlabel('Horizontal gaze position (pix)')
+    plt.ylabel('Vertical gaze position (pix)')
     
     # X-Y plot (detected fixations)
     plt.subplot(2,2,2)
+    plt.plot(fixations[:,const.FixX], fixations[:,const.FixY], 'o-')
     plt.xlim([-800,800])
     plt.ylim([-600,600])
-    plt.plot(fixations[:,const.FixX], fixations[:,const.FixY], 'o-')
+    plt.xlabel('Horizontal gaze position (pix)')
+    plt.ylabel('Vertical gaze position (pix)')
     
     # X-T plot with event data
     plt.subplot(2,2,3)
     plt.plot(t, x, label='X')
     plt.plot(t, y, label='Y')
-    plt.legend()
     
     for event in event_data[trial]:
         plt.plot([event[const.EventTime], event[const.EventTime]],
                  [-800, 800], 'k:')
         plt.text(event[const.EventTime], 400, event[const.EventText],
                  rotation=90)
+    
     plt.ylim([-800,800])
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Gaze position (pix)')
+    plt.legend()
     
     plt.show()
 
