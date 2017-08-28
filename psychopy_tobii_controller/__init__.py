@@ -636,7 +636,11 @@ class tobii_controller:
         self.datafile = open(filename,'w')
         self.datafile.write('Recording date:\t'+datetime.datetime.now().strftime('%Y/%m/%d')+'\n')
         self.datafile.write('Recording time:\t'+datetime.datetime.now().strftime('%H:%M:%S')+'\n')
-        self.datafile.write('Recording resolution\t%d x %d\n\n' % tuple(self.win.size))
+        self.datafile.write('Recording resolution:\t%d x %d\n' % tuple(self.win.size))
+        if embed_events:
+            self.datafile.write('Event recording mode:\tEmbedded\n\n')
+        else:
+            self.datafile.write('Event recording mode:\tSeparated\n\n')
 
 
     def close_datafile(self):
@@ -681,6 +685,8 @@ class tobii_controller:
         
         if self.recording:
             return
+        
+        self.datafile.write('Session Start\n')
         
         if self.embed_events:
             self.datafile.write('\t'.join(['TimeStamp',
@@ -754,6 +760,7 @@ class tobii_controller:
             for e in self.event_data:
                 self.datafile.write('%.1f\t%s\n' % ((e[0]-timestamp_start)/1000.0, e[1]))
         
+        self.datafile.write('Session End\n\n')
         self.datafile.flush()
 
 
