@@ -16,3 +16,11 @@ PupilRight = 7
 ValidityRight = 8
 GazePointX = 9
 GazePointY = 10
+
+FixStart = 0
+FixEnd = 1
+FixX = 2
+FixY = 3
+
+EventTime = 0
+EventText = 1
