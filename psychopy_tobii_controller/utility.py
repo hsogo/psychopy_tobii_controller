@@ -5,6 +5,9 @@
 # Distributed under the terms of the GNU General Public License v3 (GPLv3).
 # 
 
+from __future__ import division
+from __future__ import absolute_import
+
 import numpy as np
 import sys
 
@@ -141,7 +144,7 @@ def moving_average(data, n=3):
 
 
 def nan_moving_average_1d(data, n=3):
-    v = np.ones(n)/float(n)
+    v = np.ones(n)/n
     
     if n%2==0:
         offset = int(n/2)
