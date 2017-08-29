@@ -235,9 +235,9 @@ def interpolate_gaze_data(data, t):
     return np.array(result)
 
 
-def detect_fixation_IVT(data, max_velocity=100, min_duration=100, eye='LR'):
+def detect_fixation_vt(data, max_velocity=100, min_duration=100, eye='LR'):
     """
-    Detect fixations using I-VT method.
+    Detect fixations using velocity-threshold method.
     Returned value is a numpy.ndarray with following 4 columns.
     
     0. Onset time
@@ -297,9 +297,9 @@ def detect_fixation_IVT(data, max_velocity=100, min_duration=100, eye='LR'):
     return np.array(fixations)
 
 
-def detect_fixation_IDT(data, max_dispersion=50, min_duration=100, eye='LR'):
+def detect_fixation_dt(data, max_dispersion=50, min_duration=100, eye='LR'):
     """
-    Detect fixations using I-DT method.
+    Detect fixations using dispersion-threshold method.
     
     :param numpy.ndarray data:
         Gaze data (single session).

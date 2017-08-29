@@ -25,16 +25,16 @@ smoothed_data = [util.moving_average(g, n=3) for g in gaze_data]
 
 for trial in range(len(gaze_data)):
 
-    # Getting list of fixations using detect_fixation_IDT().
+    # Getting list of fixations using detect_fixation_dt().
     # numpy.savetxt() would be convenient to output fixation data
     # to a text file.
     #
     #     numpy.savetxt('fix.txt',fixations, fmt='%.1f', delimiter=',')
     #
-    fixations = util.detect_fixation_IDT(smoothed_data[trial],
-                                         max_dispersion = 50,
-                                         min_duration = 100,
-                                         eye = 'LR')
+    fixations = util.detect_fixation_dt(smoothed_data[trial],
+                                        max_dispersion = 50,
+                                        min_duration = 100,
+                                        eye = 'LR')
     
     # Prepare gaze data to plot.
     t = smoothed_data[trial][:,const.TimeStamp]
