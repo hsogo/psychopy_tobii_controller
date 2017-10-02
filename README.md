@@ -62,7 +62,9 @@ Basic usage of Builder components of tobii_controller is demonstrated in this sa
 - ptc_message: Insert event during recording. ptc_rec component should be placed in the same routine.
 - ptc_getpos: Get the latest gaze position. Gaze position is stored in a variable with the same name as the 'Name' property of this component.  ptc_rec component should be placed in the same routine.
 
-Builder components are in **ptc_components** directory.  Copy this directory to your component directory.  For example, 'C:/Users/foo/Documents/my_components' is in your component directory, contents of ptc_component directory (i.e, \_\_init\_\_.py, ptc_init.py and so on) should be placed in C:/Users/foo/Documents/my_components/ptc_components'.
+Builder components are in **ptc_components** directory.
+Copy this directory anywhere you have write permissions and add this directory to *component foloders* of PsychoPy Preferences.
+For example, if you copy ptc_components directory to 'C:/Users/foo/Documents', add 'C:/Users/foo/Documents/ptc_components' to *components folder* and restart PsychoPy.  *components folder* is in 'Builder' tab of PsychoPy Preference dialog.
 
 ### utility_sample01.py
 
