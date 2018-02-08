@@ -5,7 +5,10 @@
 # Distributed under the terms of the GNU General Public License v3 (GPLv3).
 # 
 
-from psychopy.app.builder.components._base import BaseComponent, Param
+try:
+    from psychopy.app.builder.components._base import BaseComponent, Param
+except:
+    from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
 thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
