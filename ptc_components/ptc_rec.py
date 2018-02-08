@@ -4,8 +4,10 @@
 # author: Hiroyuki Sogo
 # Distributed under the terms of the GNU General Public License v3 (GPLv3).
 # 
-
-from psychopy.app.builder.components._base import BaseVisualComponent, Param
+try:
+    from psychopy.app.builder.components._base import BaseVisualComponent, Param
+except:
+    from psychopy.experiment.components import BaseVisualComponent, Param
 from os import path
 
 thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
@@ -24,12 +26,12 @@ class ptc_rec_component(BaseVisualComponent):
         
         #params
         self.order = ['name'] + paramNames[:] # want a copy, else codeParamNames list gets mutated
-        self.params['start_msg'] = Param(start_msg, valType='str', allowedTypes=[],
-            updates='constant', allowedUpdates=['constant','set every repeat'],
+        self.params['start_msg'] = Param(start_msg, valType='code', allowedTypes=[],
+            updates='constant', allowedUpdates=[],
             hint='This text is inserted at the beginning of the recording.',
             label='Event (start)', categ='Advanced')
-        self.params['stop_msg'] = Param(stop_msg, valType='str', allowedTypes=[],
-            updates='constant', allowedUpdates=['constant','set every repeat'],
+        self.params['stop_msg'] = Param(stop_msg, valType='code', allowedTypes=[],
+            updates='constant', allowedUpdates=[],
             hint='This text is inserted at the end of the recording.',
             label='Event (stop)', categ='Advanced')
             

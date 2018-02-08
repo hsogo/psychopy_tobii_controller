@@ -4,8 +4,10 @@
 # author: Hiroyuki Sogo
 # Distributed under the terms of the GNU General Public License v3 (GPLv3).
 # 
-
-from psychopy.app.builder.components._base import BaseComponent, Param
+try:
+    from psychopy.app.builder.components._base import BaseComponent, Param
+except:
+    from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
 thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
@@ -25,7 +27,7 @@ class ptc_message_component(BaseComponent):
         #params
         self.order = ['name'] + paramNames[:] # want a copy, else codeParamNames list gets mutated
         self.params['time']=Param(time, valType='code', allowedTypes=[],
-            updates='constant', allowedUpdates=['constant','set every repeat'],
+            updates='constant', allowedUpdates=[],
             hint='When this event should be recorded?',
             label='time')
         self.params['timeType']=Param(timeType, valType='str', allowedVals=['time (s)', 'frame N', 'condition'],
@@ -33,7 +35,7 @@ class ptc_message_component(BaseComponent):
             hint='How do you want to define time?',
             label='time type')
         self.params['text']=Param(text, valType='str', allowedTypes=[],
-            updates='constant', allowedUpdates=['constant','set every repeat'],
+            updates='constant', allowedUpdates=[],
             hint='Event text',
             label='Event')
 
