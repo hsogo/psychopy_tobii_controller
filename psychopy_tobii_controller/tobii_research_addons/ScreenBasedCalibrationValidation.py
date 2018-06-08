@@ -395,7 +395,7 @@ class ScreenBasedCalibrationValidation(object):
             if len(samples) < self.__sample_count:
                 # Timeout before collecting enough valid samples, no calculations to be done
                 points[screen_point] += [CalibrationValidationPoint(
-                    screen_point, math.nan, math.nan, math.nan, math.nan, math.nan, math.nan, True, samples)]
+                    screen_point, float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), float('nan'), True, samples)]
                 continue
 
             stimuli_point = vectormath.calculate_normalized_point2_to_point3(
@@ -488,12 +488,12 @@ class ScreenBasedCalibrationValidation(object):
             precision_rms_left_eye_average = sum(precision_rms_left_eye_all) / num_points
             precision_rms_right_eye_average = sum(precision_rms_right_eye_all) / num_points
         else:
-            accuracy_left_eye_average = math.nan
-            accuracy_right_eye_average = math.nan
-            precision_left_eye_average = math.nan
-            precision_right_eye_average = math.nan
-            precision_rms_left_eye_average = math.nan
-            precision_rms_right_eye_average = math.nan
+            accuracy_left_eye_average = float('nan')
+            accuracy_right_eye_average = float('nan')
+            precision_left_eye_average = float('nan')
+            precision_right_eye_average = float('nan')
+            precision_rms_left_eye_average = float('nan')
+            precision_rms_right_eye_average = float('nan')
 
         result = CalibrationValidationResult(points,
                                              accuracy_left_eye_average,
