@@ -570,7 +570,10 @@ class tobii_controller:
             self.win.flip()
             self.ScreenBasedCalibrationValidation.start_collecting_data(validation_point)
             while self.ScreenBasedCalibrationValidation.is_collecting_data:
-                psychopy.core.wait(1)
+                for frameN in range(self.ScreenBasedCalibrationValidation.sample_count):
+                    self.calibration_target_disc.draw()
+                    self.calibration_target_dot.draw()
+                    self.win.flip()
 
 
     def set_custom_calibration(self, func):
