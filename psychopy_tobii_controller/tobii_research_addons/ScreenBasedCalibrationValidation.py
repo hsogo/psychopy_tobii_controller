@@ -521,3 +521,9 @@ class ScreenBasedCalibrationValidation(object):
         True if in validation mode.
         '''
         return self.__validation_mode
+
+    @property
+    def sample_count(self):
+        '''The number of samples to collect.
+        '''
+        return self.__sample_count
