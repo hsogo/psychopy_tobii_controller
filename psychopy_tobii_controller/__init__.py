@@ -19,6 +19,10 @@ import warnings
 import tobii_research
 try:
     import tobii_research_addons
+    # for python 2 compatibility
+    import math
+    if not hasattr(math, 'nan'):
+        math.nan = float('nan')
 except:
     pass
 
