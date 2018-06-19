@@ -13,10 +13,14 @@ import types
 import datetime
 import numpy as np
 import time
+import sys
 import warnings
 
 import tobii_research
-from . import tobii_research_addons
+try:
+    import tobii_research_addons
+except:
+    pass
 
 try:
     import Image
@@ -143,7 +147,8 @@ class tobii_controller:
         
         self.calibration = tobii_research.ScreenBasedCalibration(self.eyetracker)
 
-        self.ScreenBasedCalibrationValidation = tobii_research_addons.ScreenBasedCalibrationValidation(self.eyetracker)
+        if 'tobii_research_addons' in sys.modules:
+            self.ScreenBasedCalibrationValidation = tobii_research_addons.ScreenBasedCalibrationValidation(self.eyetracker)
 
     def show_status(self, text_color='white', enable_mouse=False):
         """
@@ -458,9 +463,31 @@ class tobii_controller:
     def run_validation(self, validation_points=None, shuffle=True,
                        start_key='space', decision_key='space',
                        text_color='white', enable_mouse=False, get_output=False):
-
+        """
+        Run calibration validation.
+        
+        :param validation_points: List of position of validation points.
+            If None, the calibration points will be used.
+            Default value is None.
+        :param bool shuffle: If True, order of validation points is shuffled.
+            Otherwise, validation target moves in the order of validation_points.
+            Default value is True.
+        :param str start_key: Name of key to start validation procedure.
+            If None, validation starts immediately after this method is called.
+            Default value is 'space'.
+        :param str decision_key: Name of key to leave validation.
+            Default value is 'space'.
+        :param text_color: Color of message text. Default value is 'white'
+        :param bool enable_mouse: If True, mouse operation is enabled.
+            Default value is False.
+        :param bool get_output: If True, return the validation result in strings.
+            Default value is False.
+        """
         if self.eyetracker is None:
             raise RuntimeError('Eyetracker is not found.')
+
+        if not hasattr(self, 'ScreenBasedCalibrationValidation'):
+            raise RuntimeError('tobii_research_addons is required for calibration validation.')
 
         if validation_points is None:
             self.validation_points = self.calibration_points
@@ -556,9 +583,14 @@ class tobii_controller:
 
 
     def update_validation(self):
-        self.calibration_target_dot.setFillColor('black')
-        self.calibration_target_disc.setFillColor('white')
+        """
+        Collecting validation data.
+        This method is called by
+        :func:`~psychopy_tobii_controller.tobii_controller.run_validation`
 
+        Usually, users don't have to call this method.
+        """
+        clock = psychopy.core.CountdownTimer(0.5)
         for point in self.validation_points:
             x, y = self.get_tobii_pos(point)
             validation_point = tobii_research_addons.Point2(x, y)
@@ -570,7 +602,8 @@ class tobii_controller:
             self.win.flip()
             self.ScreenBasedCalibrationValidation.start_collecting_data(validation_point)
             while self.ScreenBasedCalibrationValidation.is_collecting_data:
-                for frameN in range(self.ScreenBasedCalibrationValidation.sample_count):
+                clock.reset()
+                while clock.getTime() > 0:
                     self.calibration_target_disc.draw()
                     self.calibration_target_dot.draw()
                     self.win.flip()
