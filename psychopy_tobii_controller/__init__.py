@@ -13,9 +13,18 @@ import types
 import datetime
 import numpy as np
 import time
+import sys
 import warnings
 
 import tobii_research
+try:
+    import tobii_research_addons
+    # for python 2 compatibility
+    import math
+    if not hasattr(math, 'nan'):
+        math.nan = float('nan')
+except:
+    pass
 
 try:
     import Image
@@ -142,6 +151,8 @@ class tobii_controller:
         
         self.calibration = tobii_research.ScreenBasedCalibration(self.eyetracker)
 
+        if 'tobii_research_addons' in sys.modules:
+            self.ScreenBasedCalibrationValidation = tobii_research_addons.ScreenBasedCalibrationValidation(self.eyetracker)
 
     def show_status(self, text_color='white', enable_mouse=False):
         """
@@ -451,6 +462,155 @@ class tobii_controller:
                 self.win.flip()
                 current_time = clock.getTime()
             self.calibration.collect_data(x, y)
+
+
+    def run_validation(self, validation_points=None, shuffle=True,
+                       start_key='space', decision_key='space',
+                       text_color='white', enable_mouse=False, get_output=False):
+        """
+        Run calibration validation.
+        
+        :param validation_points: List of position of validation points.
+            If None, the calibration points will be used.
+            Default value is None.
+        :param bool shuffle: If True, order of validation points is shuffled.
+            Otherwise, validation target moves in the order of validation_points.
+            Default value is True.
+        :param str start_key: Name of key to start validation procedure.
+            If None, validation starts immediately after this method is called.
+            Default value is 'space'.
+        :param str decision_key: Name of key to leave validation.
+            Default value is 'space'.
+        :param text_color: Color of message text. Default value is 'white'
+        :param bool enable_mouse: If True, mouse operation is enabled.
+            Default value is False.
+        :param bool get_output: If True, return the validation result in strings.
+            Default value is False.
+        """
+        if self.eyetracker is None:
+            raise RuntimeError('Eyetracker is not found.')
+
+        if not hasattr(self, 'ScreenBasedCalibrationValidation'):
+            raise RuntimeError('tobii_research_addons is required for calibration validation.')
+
+        if validation_points is None:
+            self.validation_points = self.calibration_points
+        else:
+            self.validation_points = validation_points
+
+        if enable_mouse:
+            mouse = psychopy.event.Mouse(visible=False, win=self.win)
+
+        result_msg = psychopy.visual.TextStim(self.win, pos=(0, -self.win.size[1] / 4),
+                                              color=text_color, units='pix', autoLog=False)
+
+        self.ScreenBasedCalibrationValidation.enter_validation_mode()
+        if shuffle:
+            np.random.shuffle(self.validation_points)
+
+        if start_key is not None or enable_mouse:
+            waitkey = True
+            if start_key is not None:
+                if enable_mouse:
+                    result_msg.setText(
+                        'Press {} or click left button to start validation'.format(start_key))
+                else:
+                    result_msg.setText('Press {} to start validation'.format(start_key))
+            else:  # enable_mouse==True
+                result_msg.setText('Click left button to start validation')
+            while waitkey:
+                for key in psychopy.event.getKeys():
+                    if key == start_key:
+                        waitkey = False
+
+                if enable_mouse and mouse.getPressed()[0]:
+                    waitkey = False
+
+                result_msg.draw()
+                self.win.flip()
+        else:
+            self.win.flip()
+
+        self.update_validation()
+
+        self.win.flip()
+
+        validation_result = self.ScreenBasedCalibrationValidation.compute()
+        validation_output =(
+            'Left eye accuracy:\t{lacc: .{digit}f}\n'
+            'Right eye accuracy:\t{racc: .{digit}f}\n'
+            'Left eye precision:\t{lpre: .{digit}f}\n'
+            'Right eye precision:\t{rpre: .{digit}f}\n'
+            'Left eye RMS:\t{lrms: .{digit}f}\n'
+            'Right eye RMS:\t{rrms: .{digit}f}\n').format(
+                digit=2,
+                lacc=validation_result.average_accuracy_left,
+                racc=validation_result.average_accuracy_right,
+                lpre=validation_result.average_precision_left,
+                rpre=validation_result.average_precision_right,
+                lrms=validation_result.average_precision_rms_left,
+                rrms=validation_result.average_precision_rms_right)
+
+        # show validation result
+        if enable_mouse:
+            result_msg.setText(
+                '{output}Leave: {dkey} or left-click\nAbort: esc'.format(
+                output=validation_output, dkey=decision_key))
+        else:
+            result_msg.setText(
+                '{output}Leave: {dkey}\nAbort: esc'.format(
+                    output=validation_output, dkey=decision_key))
+        result_msg.draw()
+        self.win.flip()
+
+        waitkey = True
+        while waitkey:
+            for key in psychopy.event.getKeys():
+                if key in [decision_key, 'escape']:
+                    waitkey = False
+            if enable_mouse:
+                pressed = mouse.getPressed()
+                if pressed[0]:
+                    key = decision_key
+                    waitkey = False
+
+        if key == decision_key:
+            retval = 'accept'
+        elif key == 'escape':
+            retval = 'abort'
+
+        self.ScreenBasedCalibrationValidation.leave_validation_mode()
+        if get_output:
+            return(retval, validation_output)
+        else:
+            return(retval)
+
+
+    def update_validation(self):
+        """
+        Collecting validation data.
+        This method is called by
+        :func:`~psychopy_tobii_controller.tobii_controller.run_validation`
+
+        Usually, users don't have to call this method.
+        """
+        clock = psychopy.core.CountdownTimer(0.5)
+        for point in self.validation_points:
+            x, y = self.get_tobii_pos(point)
+            validation_point = tobii_research_addons.Point2(x, y)
+            self.calibration_target_disc.setPos(point)
+            self.calibration_target_dot.setPos(point)
+
+            self.calibration_target_disc.draw()
+            self.calibration_target_dot.draw()
+            self.win.flip()
+            self.ScreenBasedCalibrationValidation.start_collecting_data(validation_point)
+            while self.ScreenBasedCalibrationValidation.is_collecting_data:
+                clock.reset()
+                while clock.getTime() > 0:
+                    self.calibration_target_disc.draw()
+                    self.calibration_target_dot.draw()
+                    self.win.flip()
 
 
     def set_custom_calibration(self, func):
