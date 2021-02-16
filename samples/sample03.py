@@ -35,12 +35,8 @@ from psychopy_tobii_controller import tobii_controller
 # Calibration can be finished by pressing Enter key.
 # 
 def custom_calibration(self):
-    # Because units of the PsychoPy window is 'norm' in this example,
-    # 'size' parameter has to be set to draw precise circles.
-    dot = psychopy.visual.Circle(self.win, radius=0.002,
-        size=[float(self.win.size[1])/self.win.size[0], 1.0])
-    disc = psychopy.visual.Circle(self.win,
-        size=[float(self.win.size[1])/self.win.size[0], 1.0])
+    dot = psychopy.visual.Circle(self.win, radius=0.002, fillColor='white', lineColor=None)
+    disc = psychopy.visual.Circle(self.win, fillColor=None, lineColor='white')
     
     # if current_point_index holds the index of calibration point
     # on which calibration target is presented.  If -1, calibation
