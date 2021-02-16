@@ -5,17 +5,12 @@
 # Distributed under the terms of the GNU General Public License v3 (GPLv3).
 # 
 
-try:
-    from psychopy.app.builder.components._base import BaseComponent, Param
-except:
-    from psychopy.experiment.components import BaseComponent, Param
+from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
 thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
 iconFile = path.join(thisFolder,'ptc_cal.png')
 tooltip = 'ptc_cal: tobii_controller calibration'
-
-paramNames = ['show_status', 'calibration_points', 'shuffle', 'enable_mouse', 'start_key', 'decision_key', 'text_color', 'move_duration']
 
 class ptc_cal_component(BaseComponent):
     """Run calibration"""
@@ -29,7 +24,9 @@ class ptc_cal_component(BaseComponent):
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         
         #params
-        self.order = ['name'] + paramNames[:] # want a copy, else codeParamNames list gets mutated
+        self.order = ['name', 'show_status', 'calibration_points', 'shuffle', 
+            'enable_mouse', 'start_key', 'decision_key', 'text_color', 'move_duration']
+            
         self.params['show_status'] = Param(show_status, valType='bool', allowedTypes=[],
             updates='constant', allowedUpdates=[],
             hint='Show Tobii status before calibration',
@@ -64,8 +61,11 @@ class ptc_cal_component(BaseComponent):
             label='Motion duration', categ='Advanced')
             
         # these inherited params are harmless but might as well trim:
-        for p in ['startType', 'startVal', 'startEstim', 'stopVal', 'stopType', 'durationEstim']:
-            del self.params[p]
+        for p in ('startType', 'startVal', 'startEstim', 'stopVal',
+                  'stopType', 'durationEstim',
+                  'saveStartStop', 'syncScreenRefresh'):
+            if p in self.params:
+                del self.params[p]    
 
 
     def writeRoutineStartCode(self, buff):

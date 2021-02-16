@@ -4,19 +4,14 @@
 # author: Hiroyuki Sogo
 # Distributed under the terms of the GNU General Public License v3 (GPLv3).
 # 
-try:
-    from psychopy.app.builder.components._base import BaseVisualComponent, Param
-except:
-    from psychopy.experiment.components import BaseVisualComponent, Param
+from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
 thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
 iconFile = path.join(thisFolder,'ptc_getpos.png')
 tooltip = 'ptc_getpos: tobii_controller calibration'
 
-paramNames = ['start_msg', 'stop_msg']
-
-class ptc_getpos_component(BaseVisualComponent):
+class ptc_getpos_component(BaseComponent):
     """Recording"""
     categories = ['tobii_controller']
     def __init__(self, exp, parentName, name='ptc_getpos', filler=-10000, binocular='Average'):
@@ -25,21 +20,22 @@ class ptc_getpos_component(BaseVisualComponent):
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         
         #params
-        self.order = ['name'] + paramNames[:] # want a copy, else codeParamNames list gets mutated
+        self.order = ['name', 'start_msg', 'stop_msg']
         self.params['filler']=Param(filler, valType='code', allowedTypes=[],
             updates='constant', allowedUpdates=[],
             hint='If gaze position is not available, gaze position is filled by this value.',
             label='Filler')
-        self.params['binocular']=Param(binocular, valType='str', allowedTypes=[], allowedVals=['Average','LR'],
+        self.params['binocular']=Param(binocular, valType='str', inputType='choice', allowedTypes=[],
+            allowedVals=['Average','LR'],
             updates='constant', allowedUpdates=[],
             hint='Average: (average_x, average_y) LR: {\'left\':(left_x, left_y), \'right\':(right_x, right_y)}',
             label='Binocular Data')
-            
         # these inherited params are harmless but might as well trim:
-        for p in ['startType', 'startVal', 'startEstim', 'stopVal', 'stopType', 'durationEstim']:
-            del self.params[p]
-        for p in ['color','opacity','colorSpace','pos','size','ori','units']:
-            del self.params[p]
+        for p in ('startType', 'startVal', 'startEstim', 'stopVal',
+                  'stopType', 'durationEstim',
+                  'saveStartStop', 'syncScreenRefresh'):
+            if p in self.params:
+                del self.params[p]
 
     def writeRoutineStartCode(self, buff):
         buff.writeIndented('%(name)s = []\n\n' % self.params)

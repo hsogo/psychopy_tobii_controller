@@ -1,104 +1,123 @@
-<?xml version="1.0" ?>
-<PsychoPy2experiment encoding="utf-8" version="1.85.1">
+﻿<?xml version="1.0" ?>
+<PsychoPy2experiment encoding="utf-8" version="2021.1.0">
   <Settings>
+    <Param name="Audio latency priority" updates="None" val="use prefs" valType="str"/>
+    <Param name="Audio lib" updates="None" val="use prefs" valType="str"/>
+    <Param name="Completed URL" updates="None" val="" valType="str"/>
+    <Param name="Data file delimiter" updates="None" val="auto" valType="str"/>
+    <Param name="Data filename" updates="None" val="u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])" valType="code"/>
+    <Param name="Enable Escape" updates="None" val="True" valType="bool"/>
+    <Param name="Experiment info" updates="None" val="{u'session': u'001', u'participant': u''}" valType="code"/>
+    <Param name="Force stereo" updates="None" val="True" valType="bool"/>
+    <Param name="Full-screen window" updates="None" val="True" valType="bool"/>
+    <Param name="HTML path" updates="None" val="html" valType="str"/>
+    <Param name="Incomplete URL" updates="None" val="" valType="str"/>
+    <Param name="JS libs" updates="None" val="packaged" valType="str"/>
     <Param name="Monitor" updates="None" val="testMonitor" valType="str"/>
+    <Param name="OSF Project ID" updates="None" val="" valType="str"/>
+    <Param name="Resources" updates="None" val="[]" valType="list"/>
+    <Param name="Save csv file" updates="None" val="False" valType="bool"/>
+    <Param name="Save excel file" updates="None" val="False" valType="bool"/>
+    <Param name="Save log file" updates="None" val="True" valType="bool"/>
+    <Param name="Save psydat file" updates="None" val="True" valType="bool"/>
+    <Param name="Save wide csv file" updates="None" val="True" valType="bool"/>
+    <Param name="Screen" updates="None" val="1" valType="num"/>
+    <Param name="Show info dlg" updates="None" val="True" valType="bool"/>
+    <Param name="Show mouse" updates="None" val="False" valType="bool"/>
+    <Param name="Units" updates="None" val="height" valType="str"/>
+    <Param name="Use version" updates="None" val="" valType="str"/>
+    <Param name="Window size (pixels)" updates="None" val="[1920, 1080]" valType="code"/>
+    <Param name="blendMode" updates="None" val="avg" valType="str"/>
     <Param name="color" updates="None" val="$[0,0,0]" valType="str"/>
     <Param name="colorSpace" updates="None" val="rgb" valType="str"/>
-    <Param name="Experiment info" updates="None" val="{u'session': u'001', u'participant': u''}" valType="code"/>
-    <Param name="JS libs" updates="None" val="packaged" valType="str"/>
-    <Param name="Units" updates="None" val="height" valType="str"/>
-    <Param name="Save excel file" updates="None" val="False" valType="bool"/>
-    <Param name="Enable Escape" updates="None" val="True" valType="bool"/>
-    <Param name="Save psydat file" updates="None" val="True" valType="bool"/>
-    <Param name="Window size (pixels)" updates="None" val="[1920, 1080]" valType="code"/>
-    <Param name="Full-screen window" updates="None" val="True" valType="bool"/>
-    <Param name="blendMode" updates="None" val="avg" valType="str"/>
-    <Param name="Use version" updates="None" val="" valType="str"/>
-    <Param name="HTML path" updates="None" val="html" valType="str"/>
-    <Param name="Save csv file" updates="None" val="False" valType="bool"/>
-    <Param name="OSF Project ID" updates="None" val="" valType="str"/>
-    <Param name="Save log file" updates="None" val="True" valType="bool"/>
-    <Param name="Save wide csv file" updates="None" val="True" valType="bool"/>
-    <Param name="Show mouse" updates="None" val="False" valType="bool"/>
-    <Param name="Data filename" updates="None" val="u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])" valType="code"/>
-    <Param name="Show info dlg" updates="None" val="True" valType="bool"/>
     <Param name="expName" updates="None" val="sample05" valType="str"/>
+    <Param name="exportHTML" updates="None" val="on Sync" valType="str"/>
     <Param name="logging level" updates="None" val="exp" valType="code"/>
-    <Param name="Screen" updates="None" val="1" valType="num"/>
   </Settings>
   <Routines>
     <Routine name="trial">
       <ptc_rec_component name="ptc_rec">
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="ptc_rec" valType="code"/>
         <Param name="start_msg" updates="constant" val="Start recording" valType="str"/>
         <Param name="stop_msg" updates="constant" val="Stop recording" valType="str"/>
       </ptc_rec_component>
       <ptc_getpos_component name="ptc_getpos">
-        <Param name="name" updates="None" val="ptc_getpos" valType="code"/>
-        <Param name="filler" updates="constant" val="-10000" valType="code"/>
         <Param name="binocular" updates="constant" val="Average" valType="str"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="filler" updates="constant" val="-10000" valType="code"/>
+        <Param name="name" updates="None" val="ptc_getpos" valType="code"/>
       </ptc_getpos_component>
       <PolygonComponent name="polygon">
-        <Param name="opacity" updates="constant" val="1" valType="code"/>
-        <Param name="fillColorSpace" updates="constant" val="rgb" valType="str"/>
-        <Param name="name" updates="None" val="polygon" valType="code"/>
-        <Param name="fillColor" updates="constant" val="$[1,1,1]" valType="str"/>
-        <Param name="stopVal" updates="constant" val="" valType="code"/>
+        <Param name="colorSpace" updates="constant" val="rgb" valType="str"/>
+        <Param name="contrast" updates="constant" val="1" valType="num"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="durationEstim" updates="None" val="" valType="code"/>
-        <Param name="pos" updates="set every frame" val="ptc_getpos" valType="code"/>
+        <Param name="fillColor" updates="constant" val="$[1,1,1]" valType="str"/>
         <Param name="interpolate" updates="constant" val="linear" valType="str"/>
-        <Param name="lineWidth" updates="constant" val="1" valType="code"/>
-        <Param name="startEstim" updates="None" val="" valType="code"/>
-        <Param name="units" updates="None" val="from exp settings" valType="str"/>
-        <Param name="startType" updates="None" val="time (s)" valType="str"/>
         <Param name="lineColor" updates="constant" val="$[1,1,1]" valType="str"/>
-        <Param name="ori" updates="constant" val="0" valType="code"/>
-        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
-        <Param name="startVal" updates="None" val="0.0" valType="code"/>
-        <Param name="lineColorSpace" updates="constant" val="rgb" valType="str"/>
+        <Param name="lineWidth" updates="constant" val="1" valType="code"/>
         <Param name="nVertices" updates="constant" val="64" valType="int"/>
+        <Param name="name" updates="None" val="polygon" valType="code"/>
+        <Param name="opacity" updates="constant" val="1" valType="code"/>
+        <Param name="ori" updates="constant" val="0" valType="code"/>
+        <Param name="pos" updates="set every frame" val="ptc_getpos" valType="code"/>
+        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
+        <Param name="shape" updates="constant" val="regular polygon..." valType="str"/>
         <Param name="size" updates="constant" val="(0.1, 0.1)" valType="code"/>
+        <Param name="startEstim" updates="None" val="" valType="code"/>
+        <Param name="startType" updates="None" val="time (s)" valType="str"/>
+        <Param name="startVal" updates="None" val="0.0" valType="code"/>
+        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
+        <Param name="stopVal" updates="constant" val="" valType="code"/>
+        <Param name="syncScreenRefresh" updates="None" val="True" valType="bool"/>
+        <Param name="units" updates="None" val="from exp settings" valType="str"/>
       </PolygonComponent>
       <ptc_message_component name="ptc_message">
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="name" updates="None" val="ptc_message" valType="code"/>
         <Param name="text" updates="constant" val="look at right" valType="str"/>
-        <Param name="timeType" updates="constant" val="condition" valType="str"/>
         <Param name="time" updates="constant" val="ptc_getpos[0]&gt;0.3" valType="code"/>
+        <Param name="timeType" updates="constant" val="condition" valType="str"/>
       </ptc_message_component>
       <KeyboardComponent name="key_resp_2">
+        <Param name="allowedKeys" updates="constant" val="'space'" valType="code"/>
         <Param name="correctAns" updates="constant" val="" valType="str"/>
-        <Param name="storeCorrect" updates="constant" val="False" valType="bool"/>
-        <Param name="name" updates="None" val="key_resp_2" valType="code"/>
-        <Param name="stopVal" updates="constant" val="" valType="code"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="discard previous" updates="constant" val="True" valType="bool"/>
         <Param name="durationEstim" updates="None" val="" valType="code"/>
         <Param name="forceEndRoutine" updates="constant" val="True" valType="bool"/>
+        <Param name="name" updates="None" val="key_resp_2" valType="code"/>
+        <Param name="saveStartStop" updates="None" val="True" valType="bool"/>
         <Param name="startEstim" updates="None" val="" valType="code"/>
-        <Param name="discard previous" updates="constant" val="True" valType="bool"/>
         <Param name="startType" updates="None" val="time (s)" valType="str"/>
-        <Param name="allowedKeys" updates="constant" val="'space'" valType="code"/>
-        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
         <Param name="startVal" updates="None" val="0.0" valType="code"/>
-        <Param name="store" updates="constant" val="last key" valType="str"/>
+        <Param name="stopType" updates="None" val="duration (s)" valType="str"/>
+        <Param name="stopVal" updates="constant" val="" valType="code"/>
+        <Param name="store" updates="constant" val="nothing" valType="str"/>
+        <Param name="storeCorrect" updates="constant" val="False" valType="bool"/>
         <Param name="syncScreenRefresh" updates="constant" val="True" valType="bool"/>
       </KeyboardComponent>
     </Routine>
     <Routine name="init">
       <ptc_init_component name="ptc_init">
         <Param name="datafile" updates="constant" val="data.tsv" valType="str"/>
-        <Param name="name" updates="None" val="ptc_init" valType="code"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
         <Param name="embed" updates="constant" val="False" valType="bool"/>
         <Param name="id" updates="constant" val="0" valType="code"/>
+        <Param name="name" updates="None" val="ptc_init" valType="code"/>
       </ptc_init_component>
       <ptc_cal_component name="ptc_cal">
-        <Param name="move_duration" updates="constant" val="1.0" valType="code"/>
-        <Param name="shuffle" updates="constant" val="False" valType="bool"/>
-        <Param name="name" updates="None" val="ptc_cal" valType="code"/>
         <Param name="calibration_points" updates="constant" val="[[-0.2, -0.2], [0.2, -0.2], [0, 0], [-0.2, 0.2], [0.2, 0.2]]" valType="code"/>
-        <Param name="text_color" updates="constant" val="white" valType="str"/>
-        <Param name="start_key" updates="constant" val="space" valType="str"/>
-        <Param name="enable_mouse" updates="constant" val="True" valType="bool"/>
         <Param name="decision_key" updates="constant" val="return" valType="str"/>
+        <Param name="disabled" updates="None" val="False" valType="bool"/>
+        <Param name="enable_mouse" updates="constant" val="True" valType="bool"/>
+        <Param name="move_duration" updates="constant" val="1.0" valType="code"/>
+        <Param name="name" updates="None" val="ptc_cal" valType="code"/>
         <Param name="show_status" updates="constant" val="True" valType="bool"/>
+        <Param name="shuffle" updates="constant" val="False" valType="bool"/>
+        <Param name="start_key" updates="constant" val="space" valType="str"/>
+        <Param name="text_color" updates="constant" val="white" valType="str"/>
       </ptc_cal_component>
     </Routine>
   </Routines>
