@@ -5,7 +5,7 @@ import numpy as np
 
 from psychopy_tobii_controller import tobii_controller
 
-win = psychopy.visual.Window(units='norm', monitor='default')
+win = psychopy.visual.Window(units='height', monitor='default', fullscr=True)
 controller = tobii_controller(win)
 controller.open_datafile('test.tsv', embed_events=False)
 
@@ -47,7 +47,7 @@ if ret == 'abort':
     win.close()
     sys.exit()
 
-marker = psychopy.visual.Rect(win,width=0.01,height=0.01)
+marker = psychopy.visual.Rect(win, size=(0.01, 0.01))
 
 controller.subscribe()
 

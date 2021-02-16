@@ -165,7 +165,7 @@ class tobii_controller:
         msg = psychopy.visual.TextStim(self.win, color=text_color,
             height=0.02, pos=(0,-0.35), units='height', autoLog=False)
         bgrect = psychopy.visual.Rect(self.win,
-            width=0.6, height=0.6, lineColor='white', fillColor='black',
+            size=(0.6, 0.6), lineColor='white', fillColor='black',
             units='height', autoLog=False)
         leye = psychopy.visual.Circle(self.win,
             size=0.05, units='height', lineColor=None, fillColor='green',

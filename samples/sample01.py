@@ -8,7 +8,7 @@ from psychopy_tobii_controller import tobii_controller
 # PsychoPy window must be created before initializing tobii_controller.
 # Monitor profile must be specified if you want to use cm, deg, degFlat, degFlatPos units.
 # See PsychoPy document for monitor profile.
-win = psychopy.visual.Window(units='norm', monitor='default')
+win = psychopy.visual.Window(units='height', monitor='default', fullscr=True)
 
 # Initialize tobii_controller.
 controller = tobii_controller(win)
@@ -30,7 +30,7 @@ if ret == 'abort':
     win.close()
     sys.exit()
 
-marker = psychopy.visual.Rect(win,width=0.01,height=0.01)
+marker = psychopy.visual.Rect(win,size=(0.01,0.01))
 
 # Start recording.
 controller.subscribe()

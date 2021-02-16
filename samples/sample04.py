@@ -6,7 +6,7 @@ import numpy as np
 from psychopy_tobii_controller import tobii_controller
 
 # Background color of PsychoPy window is set to be white.
-win = psychopy.visual.Window(fullscr=False, units='norm', monitor='default', color='white')
+win = psychopy.visual.Window(fullscr=True, units='height', monitor='default', color='white')
 controller = tobii_controller(win)
 controller.open_datafile('test.tsv', embed_events=False)
 
@@ -26,7 +26,7 @@ if ret == 'abort':
     win.close()
     sys.exit()
 
-marker = psychopy.visual.Rect(win,width=0.01,height=0.01)
+marker = psychopy.visual.Rect(win, size=(0.01, 0.01))
 
 controller.subscribe()
 
