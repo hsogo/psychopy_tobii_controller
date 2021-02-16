@@ -460,7 +460,7 @@ class tobii_controller:
         :param func: custom calibration function.
         """
         
-        self.update_calibration = types.MethodType(func, self, tobii_controller)
+        self.update_calibration = types.MethodType(func, self)
 
 
     def use_default_calibration(self):
