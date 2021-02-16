@@ -3,7 +3,7 @@ from setuptools import setup
 import sys
 import os
 
-version = '1.1.0'
+version = '1.1.1'
 
 setup(name = 'psychopy_tobii_controller',
       version = version,
