@@ -8,13 +8,15 @@
 from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
-thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
-iconFile = path.join(thisFolder,'ptc_cal.png')
-tooltip = 'ptc_cal: tobii_controller calibration'
 
 class ptc_cal_component(BaseComponent):
     """Run calibration"""
     categories = ['tobii_controller']
+    targets = ['PsychoPy']
+    thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
+    iconFile = path.join(thisFolder,'ptc_cal.png')
+    tooltip = 'ptc_cal: tobii_controller calibration'
+
     def __init__(self, exp, parentName, name='ptc_cal', show_status=True,
         calibration_points = [[-0.4,-0.4],[0.4,-0.4],[0,0],[-0.4,0.4],[0.4,0.4]],
         shuffle=True, enable_mouse=False, start_key='space', decision_key='space',

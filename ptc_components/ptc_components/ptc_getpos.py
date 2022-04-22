@@ -7,13 +7,15 @@
 from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
-thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
-iconFile = path.join(thisFolder,'ptc_getpos.png')
-tooltip = 'ptc_getpos: tobii_controller calibration'
 
 class ptc_getpos_component(BaseComponent):
     """Recording"""
     categories = ['tobii_controller']
+    targets = ['PsychoPy']
+    thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
+    iconFile = path.join(thisFolder,'ptc_getpos.png')
+    tooltip = 'ptc_getpos: tobii_controller calibration'
+
     def __init__(self, exp, parentName, name='ptc_getpos', filler=-10000, binocular='Average'):
         super(ptc_getpos_component, self).__init__(exp, parentName, name)
         self.type='ptc_getpos'
