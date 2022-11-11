@@ -162,7 +162,7 @@ class tobii_controller:
         self.eyetracker.subscribe_to(tobii_research.EYETRACKER_GAZE_DATA,
                                      self.on_gaze_data_status)
         
-        msg = psychopy.visual.TextStim(self.win, color=text_color,
+        msg = psychopy.visual.TextStim(self.win, '---', color=text_color,
             height=0.02, pos=(0,-0.35), units='height', autoLog=False)
         bgrect = psychopy.visual.Rect(self.win,
             size=(0.6, 0.6), lineColor='white', fillColor='black',
