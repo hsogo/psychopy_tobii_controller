@@ -302,11 +302,15 @@ class tobii_controller:
                 self.win.flip()
             
             self.update_calibration()
-            
+
+            result_msg.setText('Calculating. Please wait...')
+            result_msg.draw()
+            self.win.flip()
+
             calibration_result = self.calibration.compute_and_apply()
             
             self.win.flip()
-            
+           
             img_draw.rectangle(((0,0),tuple(self.win.size)),fill=(0,0,0,0))
             if calibration_result.status == tobii_research.CALIBRATION_STATUS_FAILURE:
                 #computeCalibration failed.
