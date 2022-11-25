@@ -16,13 +16,13 @@ class ptc_init_component(BaseComponent):
     iconFile = path.join(thisFolder,'ptc_init.png')
     tooltip = 'ptc_init: initialize tobii_controller'
 
-    def __init__(self, exp, parentName, name='ptc_init', id=0, datafile='data.tsv', embed=False):
+    def __init__(self, exp, parentName, name='ptc_init', id=0, datafile="$'data/'+expInfo[\'participant\']+'.tsv'", embed=False, overwrite=False):
         super(ptc_init_component, self).__init__(exp, parentName, name)
         self.type='ptc_init'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
 
         #params
-        self.order = ['name', 'id', 'datafile', 'embed']
+        self.order = ['name', 'id', 'datafile', 'overwrite', 'embed']
         self.params['id'] = Param(id, valType='code', allowedTypes=[],
             updates='constant', allowedUpdates=[],
             hint='ID of Tobii eyetracker (0, 1, 2, ...)',
@@ -31,6 +31,10 @@ class ptc_init_component(BaseComponent):
             updates='constant', allowedUpdates=[],
             hint='Name of tobii_controller data file.',
             label='Tobii_controller Data File')
+        self.params['overwrite'] = Param(overwrite, valType='bool', allowedTypes=[],
+            updates='constant', allowedUpdates=[],
+            hint='If checked, existing datafile with the same name will be overwritten.',
+            label='Overwrite datafile')
         self.params['embed'] = Param(embed, valType='bool', allowedTypes=[],
             updates='constant', allowedUpdates=[],
             hint='If checked, event data is embeded into gaze data.',
@@ -47,6 +51,12 @@ class ptc_init_component(BaseComponent):
         buff.writeIndented('from psychopy_tobii_controller import tobii_controller\n')
         buff.writeIndented('ptc_controller_tobii_controller = tobii_controller(win, id=%(id)s)\n' % (self.params))
         if self.params['datafile'].val != '':
+            if not self.params['overwrite'].val:
+                buff.writeIndented('ptc_controller_datafilename = %(datafile)s\n' % (self.params))
+                buff.writeIndented('if os.path.exists(ptc_controller_datafilename):\n')
+                buff.setIndentLevel(+1, relative=True)
+                buff.writeIndented('raise FileExistsError(\'File exists: %s\' % ptc_controller_datafilename)\n')
+                buff.setIndentLevel(-1, relative=True)
             buff.writeIndented('ptc_controller_tobii_controller.open_datafile(%(datafile)s, embed_events=%(embed)s)\n' % (self.params))
     
     def writeFrameCode(self, buff):
