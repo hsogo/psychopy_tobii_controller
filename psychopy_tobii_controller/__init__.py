@@ -551,16 +551,30 @@ class tobii_controller:
         return param_dict
 
 
-    def subscribe(self):
+    def subscribe(self, wait=True, timeout=2.0):
         """
-        Start recording.
+        Start recording. Note that data will be available hundreds
+        of milliseconds after the request is sent to the eyetracker.
+        Set wait=True to wait until data becomes available.
+
+        :param bool wait: If True, wait until 
+            Default value is True.
+        :param float timeout: If wait=True and failed to retrieve 
+            gaze data within this limit, RuntimeError will be raised.
+            Unit is second.
         """
         
         self.gaze_data = []
         self.event_data = []
         self.recording = True
         self.eyetracker.subscribe_to(tobii_research.EYETRACKER_GAZE_DATA, self.on_gaze_data)
-
+        if wait:
+            start = time.perf_counter()
+            while time.perf_counter()-start < timeout:
+                if len(self.gaze_data) > 0:
+                    break
+            else:
+                raise RuntimeError('psychopy_tobii_controller: failed to retrieve gaze data within timeout ({})'.format(timeout))
 
     def unsubscribe(self):
         """
