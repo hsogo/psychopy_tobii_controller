@@ -18,7 +18,7 @@ class ptc_cal_component(BaseComponent):
     plugin = 'psychopy_tobii_controller'
 
     def __init__(self, exp, parentName, name='ptc_cal', show_status=True,
-        calibration_points = [[-0.4,-0.4],[0.4,-0.4],[0,0],[-0.4,0.4],[0.4,0.4]],
+        calibration_points = '[[-0.4,-0.4],\n [0.4,-0.4],\n [0,0],\n [-0.4,0.4],\n [0.4,0.4]]',
         shuffle=True, enable_mouse=False, start_key='space', decision_key='space',
         text_color='white', move_duration=1.5):
         super(ptc_cal_component, self).__init__(exp, parentName, name)
@@ -34,7 +34,7 @@ class ptc_cal_component(BaseComponent):
             hint='Show Tobii status before calibration',
             label='Show status')
         self.params['calibration_points'] = Param(calibration_points, valType='code', allowedTypes=[],
-            updates='constant', allowedUpdates=[],
+            updates='constant', allowedUpdates=[], inputType="multi", 
             hint='List of calibration points',
             label='Calibration points')
         self.params['shuffle'] = Param(shuffle, valType='bool', allowedTypes=[],
