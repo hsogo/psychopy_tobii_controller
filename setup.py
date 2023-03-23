@@ -29,6 +29,17 @@ Disclaimer: psychopy_tobii_controller is unofficial. It is NOT affiliated with T
       author_email = 'hsogo12600@gmail.com',
       url = 'https://github.com/hsogo/psychopy_tobii_controller/',
       licence = 'GNU GPL',
-      packages = ['psychopy_tobii_controller']
-      #package_data = {'psychopy_tobii_controller':['ptc_components/*.*']}
+      packages = ['psychopy_tobii_controller',
+                  'psychopy_tobii_controller.ptc_init',
+                  'psychopy_tobii_controller.ptc_rec',
+                  'psychopy_tobii_controller.ptc_message',
+                  'psychopy_tobii_controller.ptc_getpos',
+                  'psychopy_tobii_controller.ptc_cal'],
+      package_data={'psychopy_tobii_controller':['ptc*/*.png']},
+      entry_points={
+            'psychopy.experiment.components':['ptc_init=ptc_init',
+                                              'ptc_rec=ptc_rec',
+                                              'ptc_message=ptc_message',
+                                              'ptc_getpos=ptc_getpos',
+                                              'ptc_cal=ptc_cal']}
       )

@@ -15,6 +15,7 @@ class ptc_getpos_component(BaseComponent):
     thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
     iconFile = path.join(thisFolder,'ptc_getpos.png')
     tooltip = 'ptc_getpos: tobii_controller calibration'
+    plugin = 'psychopy_tobii_controller'
 
     def __init__(self, exp, parentName, name='ptc_getpos', filler=-10000, binocular='Average'):
         super(ptc_getpos_component, self).__init__(exp, parentName, name)

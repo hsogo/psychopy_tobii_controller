@@ -15,6 +15,7 @@ class ptc_init_component(BaseComponent):
     thisFolder = path.abspath(path.dirname(__file__))#the absolute path to the folder containing this path
     iconFile = path.join(thisFolder,'ptc_init.png')
     tooltip = 'ptc_init: initialize tobii_controller'
+    plugin = 'psychopy_tobii_controller'
 
     def __init__(self, exp, parentName, name='ptc_init', id=0, datafile="$'data/'+expInfo[\'participant\']+'.tsv'", embed=False, overwrite=False):
         super(ptc_init_component, self).__init__(exp, parentName, name)
