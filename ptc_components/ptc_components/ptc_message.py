@@ -16,13 +16,13 @@ class ptc_message_component(BaseComponent):
     iconFile = path.join(thisFolder,'ptc_message.png')
     tooltip = 'ptc_message: tobii_controller calibration'
 
-    def __init__(self, exp, parentName, name='ptc_message', time='', timeType='condition', text='event'):
+    def __init__(self, exp, parentName, name='ptc_message', time='', timeType='condition', text='event', sync=False):
         super(ptc_message_component, self).__init__(exp, parentName, name)
         self.type='ptc_message'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         
         #params
-        self.order = ['name', 'time', 'timeType', 'text']
+        self.order = ['name', 'time', 'timeType', 'text', 'sync']
         self.params['time']=Param(time, valType='code', allowedTypes=[],
             updates='constant', allowedUpdates=[],
             hint='When this event should be recorded?',
@@ -37,6 +37,10 @@ class ptc_message_component(BaseComponent):
             updates='constant', allowedUpdates=[],
             hint='Event text',
             label='Event')
+        self.params['sync']=Param(text, valType='bool', allowedTypes=[],
+            updates='constant', allowedUpdates=[],
+            hint='Event is recorded when the screen is flipped',
+            label='Sync timing with screen')
         # these inherited params are harmless but might as well trim:
         for p in ('startType', 'startVal', 'startEstim', 'stopVal',
                   'stopType', 'durationEstim',
@@ -48,20 +52,25 @@ class ptc_message_component(BaseComponent):
         buff.writeIndented('%(name)s_sent=False\n' % (self.params))
 
     def writeFrameCode(self, buff):
+        if self.params['sync'].val:
+            code = 'win.callOnFlip(ptc_controller_tobii_controller.record_event, %(text)s)\n' % (self.params)
+        else:
+            code = 'ptc_controller_tobii_controller.record_event(%(text)s)\n' % (self.params)
+
         if self.params['timeType'].val=='time (s)':
             buff.writeIndented('if %(name)s_sent==False and %(time)s<=t:\n' % (self.params))
             buff.setIndentLevel(+1, relative=True)
-            buff.writeIndented('ptc_controller_tobii_controller.record_event(%(text)s)\n' % (self.params))
+            buff.writeIndented(code)
             buff.writeIndented('%(name)s_sent=True\n' % (self.params))
             buff.setIndentLevel(-1, relative=True)
         elif self.params['timeType'].val=='frame N':
             buff.writeIndented('if %(time)s==frameN:\n' % (self.params))
             buff.setIndentLevel(+1, relative=True)
-            buff.writeIndented('ptc_controller_tobii_controller.record_event(%(text)s)\n' % (self.params))
+            buff.writeIndented(code)
             buff.setIndentLevel(-1, relative=True)
         else: # condition
             buff.writeIndented('if %(time)s:\n' % (self.params))
             buff.setIndentLevel(+1, relative=True)
-            buff.writeIndented('ptc_controller_tobii_controller.record_event(%(text)s)\n' % (self.params))
+            buff.writeIndented(code)
             buff.setIndentLevel(-1, relative=True)
 
