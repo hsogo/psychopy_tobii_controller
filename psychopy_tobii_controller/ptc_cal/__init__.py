@@ -8,7 +8,6 @@
 from psychopy.experiment.components import BaseComponent, Param
 from os import path
 
-
 class ptc_cal_component(BaseComponent):
     """Run calibration"""
     categories = ['tobii_controller']

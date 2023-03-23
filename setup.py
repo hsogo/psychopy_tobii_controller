@@ -35,11 +35,11 @@ Disclaimer: psychopy_tobii_controller is unofficial. It is NOT affiliated with T
                   'psychopy_tobii_controller.ptc_message',
                   'psychopy_tobii_controller.ptc_getpos',
                   'psychopy_tobii_controller.ptc_cal'],
-      package_data={'psychopy_tobii_controller':['ptc*/*.png']},
+      package_data={'psychopy_tobii_controller':['ptc*/*/*.png']},
       entry_points={
-            'psychopy.experiment.components':['ptc_init=ptc_init',
-                                              'ptc_rec=ptc_rec',
-                                              'ptc_message=ptc_message',
-                                              'ptc_getpos=ptc_getpos',
-                                              'ptc_cal=ptc_cal']}
+            'psychopy.experiment.components':['ptc_init_component=psychopy_tobii_controller.ptc_init:ptc_init_component',
+                                              'ptc_rec_component=psychopy_tobii_controller.ptc_rec:ptc_rec_component',
+                                              'ptc_message_component=psychopy_tobii_controller.ptc_message:ptc_message_component',
+                                              'ptc_getpos_component=psychopy_tobii_controller.ptc_getpos:ptc_getpos_component',
+                                              'ptc_cal_component=psychopy_tobii_controller.ptc_cal:ptc_cal_component']}
       )
