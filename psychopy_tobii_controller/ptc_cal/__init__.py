@@ -20,8 +20,8 @@ class ptc_cal_component(BaseComponent):
     def __init__(self, exp, parentName, name='ptc_cal', show_status=True,
         calibration_points = '[[-0.4,-0.4],\n [0.4,-0.4],\n [0,0],\n [-0.4,0.4],\n [0.4,0.4]]',
         shuffle=True, enable_mouse=False, start_key='space', decision_key='space',
-        text_color='white', move_duration=1.5):
-        super(ptc_cal_component, self).__init__(exp, parentName, name)
+        text_color='white', move_duration=1.5, disabled=False):
+        super(ptc_cal_component, self).__init__(exp, parentName, name, disabled=disabled)
         self.type='ptc_cal'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         

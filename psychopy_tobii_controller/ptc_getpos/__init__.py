@@ -17,8 +17,9 @@ class ptc_getpos_component(BaseComponent):
     tooltip = 'ptc_getpos: tobii_controller calibration'
     plugin = 'psychopy_tobii_controller'
 
-    def __init__(self, exp, parentName, name='ptc_getpos', filler=-10000, binocular='Average'):
-        super(ptc_getpos_component, self).__init__(exp, parentName, name)
+    def __init__(self, exp, parentName, name='ptc_getpos', filler=-10000, 
+                 binocular='Average', disabled=False):
+        super(ptc_getpos_component, self).__init__(exp, parentName, name, disabled=disabled)
         self.type='ptc_getpos'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         

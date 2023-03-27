@@ -17,8 +17,9 @@ class ptc_rec_component(BaseComponent):
     tooltip = 'ptc_rec: tobii_controller calibration'
     plugin = 'psychopy_tobii_controller'
 
-    def __init__(self, exp, parentName, name='ptc_rec', start_rec=True, start_msg='', stop_rec=True, stop_msg='', wait=True):
-        super(ptc_rec_component, self).__init__(exp, parentName, name)
+    def __init__(self, exp, parentName, name='ptc_rec', start_rec=True, start_msg='',
+                 stop_rec=True, stop_msg='', wait=True, disabled=False):
+        super(ptc_rec_component, self).__init__(exp, parentName, name, disabled=disabled)
         self.type='ptc_rec'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         

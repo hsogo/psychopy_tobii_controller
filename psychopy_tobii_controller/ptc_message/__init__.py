@@ -17,8 +17,9 @@ class ptc_message_component(BaseComponent):
     tooltip = 'ptc_message: tobii_controller calibration'
     plugin = 'psychopy_tobii_controller'
 
-    def __init__(self, exp, parentName, name='ptc_message', time='', timeType='condition', text='event', sync=False):
-        super(ptc_message_component, self).__init__(exp, parentName, name)
+    def __init__(self, exp, parentName, name='ptc_message', time='', timeType='condition',
+                 text='event', sync=False, disabled=False):
+        super(ptc_message_component, self).__init__(exp, parentName, name, disabled=disabled)
         self.type='ptc_message'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
         
@@ -38,7 +39,7 @@ class ptc_message_component(BaseComponent):
             updates='constant', allowedUpdates=[],
             hint='Event text',
             label='Event')
-        self.params['sync']=Param(text, valType='bool', allowedTypes=[],
+        self.params['sync']=Param(sync, valType='bool', allowedTypes=[],
             updates='constant', allowedUpdates=[],
             hint='Event is recorded when the screen is flipped',
             label='Sync timing with screen')

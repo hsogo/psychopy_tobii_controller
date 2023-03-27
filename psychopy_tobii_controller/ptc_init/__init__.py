@@ -17,8 +17,9 @@ class ptc_init_component(BaseComponent):
     tooltip = 'ptc_init: initialize tobii_controller'
     plugin = 'psychopy_tobii_controller'
 
-    def __init__(self, exp, parentName, name='ptc_init', id=0, datafile="$'data/'+expInfo[\'participant\']+'.tsv'", embed=False, overwrite=False):
-        super(ptc_init_component, self).__init__(exp, parentName, name)
+    def __init__(self, exp, parentName, name='ptc_init', id=0, datafile="$'data/'+expInfo[\'participant\']+'.tsv'",
+                 embed=False, overwrite=False, disabled=False):
+        super(ptc_init_component, self).__init__(exp, parentName, name, disabled=disabled)
         self.type='ptc_init'
         self.url='https://github.com/hsogo/psychopy_tobii_controller/'
 
