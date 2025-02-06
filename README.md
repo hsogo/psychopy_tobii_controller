@@ -52,20 +52,6 @@ Basic usage of tobii_controller is demonstrated in this sample.
 
 - Customizing key mapping for selecting calibration points.
 
-### builder_sample01.psyexp
-
-Basic usage of Builder components of tobii_controller is demonstrated in this sample.
-
-- ptc_init: Initialize tobii_controller. This component works in any routine.
-- ptc_cal: Run calibration. Calibration is performed at the beginning of the routine where this component is placed.  More preceisely, this component is equivalent to add calibration codes to "begin routine" of the Code component.
-- ptc_rec: Record gaze data in the routine where this component is placed.
-- ptc_message: Insert event during recording. ptc_rec component should be placed in the same routine.
-- ptc_getpos: Get the latest gaze position. Gaze position is stored in a variable with the same name as the 'Name' property of this component.  ptc_rec component should be placed in the same routine.
-
-Builder components are in **ptc_components** directory.
-Copy this directory anywhere you have write permissions and add this directory to *component foloders* of PsychoPy Preferences.
-For example, if you copy ptc_components directory to 'C:/Users/foo/Documents', add 'C:/Users/foo/Documents/ptc_components' to *components folder* and restart PsychoPy.  *components folder* is in 'Builder' tab of PsychoPy Preference dialog.
-
 ### utility_sample01.py
 
 A sample of utility functions.
