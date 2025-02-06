@@ -104,7 +104,7 @@ def load_data(filename):
                     elif len(items)==12:
                         trial_event.append([float(items[0]), items[-1]])
                     else:
-                        raise VauleError('Invalid data format in line {}'.format(processed_line))
+                        raise ValueError('Invalid data format in line {}'.format(processed_lines))
                 else:
                     raise ValueError('Invalid event mode')
             elif status=='event':  # Separated mode only
