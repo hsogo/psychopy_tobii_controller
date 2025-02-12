@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psychopy_tobii_controller"
+version = "1.3.0"
+description = "Tobii Controller for PsychoPy'"
+readme = "README.md"
+requires-python = ">= 3.7"
+license = {text = "GNU General Public License v3 (GPLv3)"}
+authors = [
+  { name = "Hiroyuki Sogo", email = "hsogo12600@gmail.com" },
+
+]
+classifiers = [
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+urls.homepage = "https://github.com/hsogo/psychopy_tobii_controller"
+urls.repository = "https://github.com/hsogo/psychopy_tobii_controller"
+dependencies = [
+  "psychopy",
+]
+
+[tool.setuptools.packages.find]
+where = ["", "psychopy_tobii_controller",]
