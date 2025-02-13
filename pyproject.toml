@@ -27,6 +27,7 @@ urls.homepage = "https://github.com/hsogo/psychopy_tobii_controller"
 urls.repository = "https://github.com/hsogo/psychopy_tobii_controller"
 dependencies = [
   "psychopy",
+  "tobii-research",
 ]
 
 [tool.setuptools.packages.find]
