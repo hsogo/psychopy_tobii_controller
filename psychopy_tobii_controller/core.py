@@ -92,6 +92,7 @@ class tobii_controller:
             radius=self.calibration_target_disc_size, fillColor='lime',
             lineColor='white', lineWidth=1, autoLog=False)
         self.update_calibration = self.update_calibration_default
+        self.update_validation = self.update_validation_default
         if self.win.units == 'norm': # fix oval
             self.calibration_target_dot.setSize([float(self.win.size[1])/self.win.size[0], 1.0])
             self.calibration_target_disc.setSize([float(self.win.size[1])/self.win.size[0], 1.0])
@@ -131,32 +132,21 @@ class tobii_controller:
                                      self.on_gaze_data_status)
         
         msg = self.psychopy_visual.TextStim(self.win, '---', color=text_color,
-            height=0.02, pos=(0,-0.35), units='height', autoLog=False)
-        bgrect = self.psychopy_visual.Rect(self.win,
-            size=(0.6, 0.6), lineColor='white', fillColor='black',
-            units='height', autoLog=False)
-        leye = self.psychopy_visual.Circle(self.win,
-            size=0.05, units='height', lineColor=None, fillColor='green',
-            autoLog=False)
-        reye = self.psychopy_visual.Circle(self.win, size=0.05, units='height',
-            lineColor=None, fillColor='red', autoLog=False)
+            height=0.05, pos=(0, -0.1), units='height', autoLog=False)
         
         b_show_status = True
         while b_show_status:
-            bgrect.draw()
             if self.gaze_data_status is not None:
                 lp, lv, rp, rv = self.gaze_data_status
-                msgst = 'Left: {:.3f},{:.3f},{:.3f}\n'.format(*lp)
-                msgst += 'Right: {:.3f},{:.3f},{:.3f}\n'.format(*rp)
-                msg.setText(msgst)
                 if lv:
-                    leye.setPos(((lp[0]-0.5)/2,(lp[1]-0.5)/2))
-                    leye.setRadius((1-lp[2])/2)
-                    leye.draw()
+                    msgst = 'L: {:7.2f}, {:7.2f}, {:7.2f}\n'.format(*lp)
+                else:
+                    msgst = '\n'
                 if rv:
-                    reye.setPos(((rp[0]-0.5)/2,(rp[1]-0.5)/2))
-                    reye.setRadius((1-rp[2])/2)
-                    reye.draw()
+                    msgst += 'R: {:7.2f}, {:7.2f}, {:7.2f}\n'.format(*rp)
+                else:
+                    msgst += ''
+                msg.setText(msgst)
             
             for key in self.psychopy_event.getKeys():
                 if key == 'escape' or key == 'space':
@@ -179,9 +169,9 @@ class tobii_controller:
         Usually, users don't have to call this method.
         """
         
-        lp = gaze_data.left_eye.gaze_origin.position_in_track_box_coordinates
+        lp = gaze_data.left_eye.gaze_origin.position_in_user_coordinates
         lv = gaze_data.left_eye.gaze_origin.validity
-        rp = gaze_data.right_eye.gaze_origin.position_in_track_box_coordinates
+        rp = gaze_data.right_eye.gaze_origin.position_in_user_coordinates
         rv = gaze_data.right_eye.gaze_origin.validity
         self.gaze_data_status = (lp, lv, rp, rv)
 
@@ -379,6 +369,158 @@ class tobii_controller:
         return retval
 
 
+    def run_validation(self, calibration_points, move_duration=1.5,
+            shuffle=True, target_shift=0, n_samples=30, start_key='space', decision_key='space',
+            text_color='white', enable_mouse=False):
+        """
+        Run validation.
+        
+        :param calibration_points: List of position of validation points.
+        :param float move_duration: Duration of animation of validation target.
+            Unit is second.  Default value is 1.5.
+        :param bool shuffle: If True, order of validation points is shuffled.
+            Otherwise, validation target moves in the order of calibration_points.
+            Default value is True.
+        :param float random_shift:
+            Size of random shift of target positions.  The unit of this value is
+            the same as the PsychoPy Window object.
+            Default value is 0 (i.e. no shift).
+        :param: int n_samples:
+            Number of samples recorded at each target position.
+            Default value is 30.
+        :param str start_key: Name of key to start validation procedure.
+            If None, validation starts immediately afte this method is called.
+            Default value is 'space'.
+        :param str decision_key: Name of key to accept validation.
+            Default value is 'space'.
+        :param text_color: Color of message text. Default value is 'white'
+        :param bool enable_mouse: If True, mouse operation is enabled.
+            Default value is False.
+        """
+        if self.eyetracker is None:
+            raise RuntimeError('Eyetracker is not found.')
+        
+        if not (2 <= len(calibration_points) <= 9):
+            raise ValueError('Calibration points must be 2~9')
+        
+        self.subscribe(wait=True)
+
+        if enable_mouse:
+            mouse = self.psychopy_event.Mouse(visible=False, win=self.win)
+        
+        img = self.Image.new('RGBA',tuple(self.win.size))
+        img_draw = self.ImageDraw.Draw(img)
+        
+        result_img = self.psychopy_visual.SimpleImageStim(self.win, img, autoLog=False)
+        result_msg = self.psychopy_visual.TextStim(self.win, pos=(0,-self.win.size[1]/4),
+            color=text_color, units='pix', autoLog=False)
+
+        self.n_samples = n_samples
+        self.validation_data = []
+        self.move_duration = move_duration
+        if target_shift > 0:
+            self.original_calibration_points = []
+            for p in calibration_points:
+                q = np.random.random() * 2 * np.pi
+                self.original_calibration_points.append((p[0]+np.cos(q)*target_shift, p[1]+np.sin(q)*target_shift))
+        else:
+            self.original_calibration_points = calibration_points[:]
+        self.retry_points = list(range(len(self.original_calibration_points))) # set all points
+
+        in_calibration_loop = True
+        while in_calibration_loop:
+            self.calibration_points = []
+            for i in range(len(self.original_calibration_points)):
+                if i in self.retry_points:
+                    self.calibration_points.append(self.original_calibration_points[i])
+            
+            if shuffle:
+                np.random.shuffle(self.calibration_points)
+            
+            if start_key is not None or enable_mouse:
+                waitkey = True
+                if start_key is not None:
+                    if enable_mouse:
+                        result_msg.setText('Press {} or click left button to start validation'.format(start_key))
+                    else:
+                        result_msg.setText('Press {} to start validation'.format(start_key))
+                else: # enable_mouse==True
+                    result_msg.setText('Click left button to start validation')
+                while waitkey:
+                    for key in self.psychopy_event.getKeys():
+                        if key==start_key:
+                           waitkey = False
+                    
+                    if enable_mouse and mouse.getPressed()[0]:
+                        waitkey = False
+                    
+                    result_msg.draw()
+                    self.win.flip()
+            else:
+                self.win.flip()
+
+            self.update_validation()
+
+            self.win.flip()
+
+            error = {'L':[],'R':[]}
+            img_draw.rectangle(((0,0),tuple(self.win.size)),fill=(0,0,0,0))
+            for vdat in self.validation_data:
+                px, py = self.get_tobii_pos(vdat[0])
+                lx, ly = self.get_tobii_pos(vdat[1][0:2])
+                rx, ry = self.get_tobii_pos(vdat[1][2:4])
+                if not np.isnan(lx):
+                    img_draw.line(((px*self.win.size[0], py*self.win.size[1]),
+                                   (lx*self.win.size[0], ly*self.win.size[1])), fill=(0,255,0,255))
+                    error['L'].append(np.linalg.norm((lx-px, ly-py)))
+                if not np.isnan(rx):
+                    img_draw.line(((px*self.win.size[0], py*self.win.size[1]),
+                                   (rx*self.win.size[0], ry*self.win.size[1])), fill=(255,0,0,255))
+                    error['R'].append(np.linalg.norm((rx-px, ry-py)))
+            for pp in self.original_calibration_points:
+                p = self.get_tobii_pos(pp)
+                img_draw.ellipse(((p[0]*self.win.size[0]-3, p[1]*self.win.size[1]-3),
+                                    (p[0]*self.win.size[0]+3, p[1]*self.win.size[1]+3)), outline=(0,0,0,255))
+ 
+            if enable_mouse:
+                result_msg.setText('Mean Error L:{:.3f}  R:{:.3f}\nAccept: {} or right-click\nAbort: esc'.format(
+                    np.average(error['L']), np.average(error['R']), decision_key))
+            else:
+                result_msg.setText('Mean Error L:{:.3f}  R:{:.3f}\nAccept: {}\nAbort: esc'.format(
+                    np.average(error['L']), np.average(error['R']), decision_key))
+            result_img.setImage(img)
+
+            waitkey = True
+            if enable_mouse:
+                mouse.setVisible(True)
+            while waitkey:
+                for key in self.psychopy_event.getKeys():
+                    if key in [decision_key, 'escape']:
+                        waitkey = False
+                if enable_mouse:
+                    pressed = mouse.getPressed()
+                    if pressed[2]: # right click
+                        key = decision_key
+                        waitkey = False
+                result_img.draw()
+                result_msg.draw()
+                self.win.flip()
+        
+            if key == decision_key:
+                    retval = 'accept'
+                    in_calibration_loop = False
+            elif key == 'escape':
+                retval = 'abort'
+                in_calibration_loop = False
+            else:
+                raise RuntimeError('Calibration: Invalid key')
+                
+            if enable_mouse:
+                mouse.setVisible(False)
+
+        self.unsubscribe()
+
+
     def collect_calibration_data(self, p, cood='PsychoPy'):
         """
         Callback function used by
@@ -441,6 +583,61 @@ class tobii_controller:
         """
         
         self.update_calibration = self.update_calibration_default
+
+
+    def update_validation_default(self):
+        """
+        Updating validation target and correcting validation data.
+        This method is called by
+        :func:`~psychopy_tobii_controller.tobii_controller.run_validation`
+        
+        Usually, users don't have to call this method.
+        """
+        
+        clock = self.psychopy_core.Clock()
+        for point_index in range(len(self.calibration_points)):
+            self.calibration_target_dot.setPos(self.calibration_points[point_index])
+            self.calibration_target_disc.setPos(self.calibration_points[point_index])
+            
+            clock.reset()
+            current_time = clock.getTime()
+            while current_time < self.move_duration:
+                self.calibration_target_disc.setRadius(
+                    (self.calibration_target_dot_size*2.0-self.calibration_target_disc_size)/ \
+                     self.move_duration*current_time+self.calibration_target_disc_size
+                    )
+                self.psychopy_event.getKeys()
+                self.calibration_target_disc.draw()
+                self.calibration_target_dot.draw()
+                self.win.flip()
+                current_time = clock.getTime()
+            n = 0
+            last_t = self.gaze_data[-1][0] # timestamp
+            while n<self.n_samples:
+                if self.gaze_data[-1][0] > last_t: # new  sample
+                    self.validation_data.append((self.calibration_points[point_index],
+                                                 self.get_current_gaze_position()))
+                    last_t  = self.gaze_data[-1][0]
+                    n += 1
+                # self.win.flip()
+
+
+    def set_custom_validation(self, func):
+        """
+        Set custom validation function.
+        
+        :param func: custom validation function.
+        """
+        
+        self.update_validation = types.MethodType(func, self)
+
+
+    def use_default_validation(self):
+        """
+        Revert validation function to default one.
+        """
+        
+        self.update_validation = self.update_validation_default
 
 
     def get_calibration_keymap(self):
