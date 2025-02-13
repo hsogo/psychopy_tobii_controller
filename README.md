@@ -52,6 +52,10 @@ Basic usage of tobii_controller is demonstrated in this sample.
 
 - Customizing key mapping for selecting calibration points.
 
+### sample06.py
+
+- Run a validation test after calibration.
+
 ### utility_sample01.py
 
 A sample of utility functions.
