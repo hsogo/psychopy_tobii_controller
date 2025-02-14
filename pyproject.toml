@@ -31,4 +31,5 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["", "psychopy_tobii_controller",]
+include = ["psychopy_tobii_controller*"]
+exclude = ["samples*", "work*"]
